@@ -7,12 +7,11 @@ import { Alerta } from "@/components/ui";
 export function TotalNeto({ r, etiqueta = "TOTAL NETO A PAGAR" }: { r: ResultadoFiniquito; etiqueta?: string }) {
   const prov = r.estado !== "DEFINITIVO";
   return (
-    <div className="overflow-hidden rounded-2xl border-2 border-ink bg-ink text-white shadow-lg">
-      <div className="stripe" />
-      <div className="flex flex-wrap items-end justify-between gap-3 p-4 sm:p-5">
+    <div className="hero !p-0">
+      <div className="relative z-10 flex flex-wrap items-end justify-between gap-3 p-5 pb-6">
         <div>
           <p className="text-xs font-bold tracking-widest text-sun">{etiqueta}</p>
-          <p className="text-4xl font-black leading-none text-sun sm:text-5xl">{money(r.totales.netoAPagar)}</p>
+          <p className="text-5xl font-black leading-none text-sun drop-shadow sm:text-6xl">{money(r.totales.netoAPagar)}</p>
           {prov ? (
             <p className="mt-2 inline-block rounded bg-fire px-2 py-0.5 text-xs font-bold">
               {r.estado === "INCOMPLETO" ? "CÁLCULO INCOMPLETO" : "PROVISIONAL – pendiente de validación fiscal"}
@@ -58,9 +57,9 @@ export function ResultView({ r }: { r: ResultadoFiniquito }) {
       <EstadoCalculoBanner r={r} />
 
       <div className="grid gap-3 sm:grid-cols-3">
-        <div className="card"><p className="label">Antigüedad exacta</p><p className="text-lg font-extrabold">{a.texto}</p><p className="hint">{a.diasTotales} días naturales · {num(a.aniosDecimal, 4)} años</p></div>
-        <div className="card"><p className="label">Salario diario</p><p className="text-lg font-extrabold">{money(r.salario.diario)}</p><p className="hint">{r.salario.explicacion}</p></div>
-        <div className="card"><p className="label">Salario diario integrado</p><p className="text-lg font-extrabold">{money(r.salario.diarioIntegrado)}</p><p className="hint">Factor {r.salario.factorIntegracion} · base de las indemnizaciones</p></div>
+        <div className="card card-accent pl-5"><p className="label">Antigüedad exacta</p><p className="text-lg font-extrabold">{a.texto}</p><p className="hint">{a.diasTotales} días naturales · {num(a.aniosDecimal, 4)} años</p></div>
+        <div className="card card-accent pl-5"><p className="label">Salario diario</p><p className="text-lg font-extrabold">{money(r.salario.diario)}</p><p className="hint">{r.salario.explicacion}</p></div>
+        <div className="card card-accent pl-5"><p className="label">Salario diario integrado</p><p className="text-lg font-extrabold">{money(r.salario.diarioIntegrado)}</p><p className="hint">Factor {r.salario.factorIntegracion} · base de las indemnizaciones</p></div>
       </div>
 
       <section className="card">
@@ -68,7 +67,7 @@ export function ResultView({ r }: { r: ResultadoFiniquito }) {
         <div className="table-wrap">
           <table className="w-full min-w-[640px] text-sm">
             <thead>
-              <tr className="border-b-2 border-ink text-left text-xs uppercase tracking-wide text-muted">
+              <tr className="border-b-2 border-ink bg-sun-soft text-left text-xs uppercase tracking-wide">
                 <th className="py-2 pr-2">Concepto</th><th className="px-2 text-right">Generado</th><th className="px-2 text-right">Pagado antes</th><th className="px-2 text-right">Saldo</th><th className="pl-2 text-right">ISR</th>
               </tr>
             </thead>

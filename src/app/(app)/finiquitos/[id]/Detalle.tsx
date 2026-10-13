@@ -57,14 +57,15 @@ export function Detalle({ f, resultado, pagos, revisiones, rol }: { f: F; result
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap items-start justify-between gap-3">
+      <div className="hero">
+       <div className="relative z-10 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <Link href="/" className="text-sm font-bold underline">← Finiquitos</Link>
-          <h1 className="mt-1 text-2xl font-black">{f.trabajador}</h1>
-          <p className="text-sm text-muted">{f.folio} · {f.puesto} · {f.sucursal} · versión {f.version}</p>
+          <Link href="/" className="text-xs font-extrabold uppercase tracking-widest text-sun">← Finiquitos</Link>
+          <h1 className="mt-1 text-3xl">{f.trabajador}</h1>
+          <p className="text-sm text-white/70">{f.folio} · {f.puesto} · {f.sucursal} · versión {f.version}</p>
           <div className="mt-2 flex gap-2"><EstadoChip estado={f.estado} /><CalculoChip estado={f.estadoCalculo} /></div>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex w-full flex-wrap gap-2 sm:w-auto">
           {["BORRADOR", "CALCULADO", "REVISADO"].includes(f.estado) && <Link href={`/finiquitos/${f.id}/editar`} className="btn btn-ghost">Editar</Link>}
           {["AUTORIZADO", "PAGADO"].includes(f.estado) && puedeAutorizar && <Link href={`/finiquitos/${f.id}/editar`} className="btn btn-ghost">Corregir (documentado)</Link>}
           {f.estado === "BORRADOR" && <button className="btn btn-dark" disabled={ocupado} onClick={() => estado("CALCULAR")}>Marcar como calculado</button>}
@@ -74,6 +75,7 @@ export function Detalle({ f, resultado, pagos, revisiones, rol }: { f: F; result
           )}
           {["CALCULADO", "REVISADO"].includes(f.estado) && <button className="btn btn-ghost" disabled={ocupado} onClick={() => { setNota(""); setModal({ accion: "DEVOLVER", titulo: "Devolver al estado anterior", ayuda: "Indique el motivo.", min: 5 }); }}>Devolver</button>}
         </div>
+       </div>
       </div>
 
       {error && <Alerta tipo="error">{error}</Alerta>}
@@ -81,10 +83,10 @@ export function Detalle({ f, resultado, pagos, revisiones, rol }: { f: F; result
       {resultado.estado === "INCOMPLETO" && <Alerta tipo="error" titulo="Cálculo incompleto">No puede autorizarse hasta resolver los pendientes bloqueantes.</Alerta>}
 
       <div className="grid gap-3 text-sm sm:grid-cols-4">
-        <div className="card"><p className="label">Creado por</p><b>{f.creadoPor ?? "—"}</b><p className="hint">{fechaCorta(f.creadoEn.slice(0, 10))}</p></div>
-        <div className="card"><p className="label">Última modificación</p><b>{f.modificadoPor ?? f.creadoPor ?? "—"}</b><p className="hint">{fechaCorta(f.actualizadoEn.slice(0, 10))}</p></div>
-        <div className="card"><p className="label">Revisó</p><b>{f.revisadoPor ?? "—"}</b><p className="hint">{f.revisadoEn ? fechaCorta(f.revisadoEn.slice(0, 10)) : "pendiente"}</p></div>
-        <div className="card"><p className="label">Autorizó</p><b>{f.autorizadoPor ?? "—"}</b><p className="hint">{f.autorizadoEn ? fechaCorta(f.autorizadoEn.slice(0, 10)) : "pendiente"}</p></div>
+        <div className="card card-accent pl-5"><p className="label">Creado por</p><b>{f.creadoPor ?? "—"}</b><p className="hint">{fechaCorta(f.creadoEn.slice(0, 10))}</p></div>
+        <div className="card card-accent pl-5"><p className="label">Última modificación</p><b>{f.modificadoPor ?? f.creadoPor ?? "—"}</b><p className="hint">{fechaCorta(f.actualizadoEn.slice(0, 10))}</p></div>
+        <div className="card card-accent pl-5"><p className="label">Revisó</p><b>{f.revisadoPor ?? "—"}</b><p className="hint">{f.revisadoEn ? fechaCorta(f.revisadoEn.slice(0, 10)) : "pendiente"}</p></div>
+        <div className="card card-accent pl-5"><p className="label">Autorizó</p><b>{f.autorizadoPor ?? "—"}</b><p className="hint">{f.autorizadoEn ? fechaCorta(f.autorizadoEn.slice(0, 10)) : "pendiente"}</p></div>
       </div>
 
       <section className="card">

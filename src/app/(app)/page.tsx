@@ -40,13 +40,16 @@ export default async function Inicio({ searchParams }: { searchParams: SP }) {
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black">Finiquitos registrados</h1>
-          <p className="hint">Hola, {user.nombre}. Aquí está el historial de cálculos de Fatboy.</p>
+      <section className="hero">
+        <div className="relative z-10 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="text-xs font-extrabold uppercase tracking-[.2em] text-sun">Fatboy · Mexicali, B.C.</p>
+            <h1 className="mt-1 text-3xl sm:text-4xl">Finiquitos<br className="sm:hidden" /> y terminación laboral</h1>
+            <p className="mt-2 max-w-md text-sm text-white/75">Hola, {user.nombre}. Calcula, revisa, autoriza y documenta cada salida con respaldo legal.</p>
+          </div>
+          <Link href="/finiquitos/nuevo" className="btn btn-primary w-full text-base sm:w-auto">+ Nuevo cálculo</Link>
         </div>
-        <Link href="/finiquitos/nuevo" className="btn btn-primary">+ Nuevo cálculo</Link>
-      </div>
+      </section>
 
       {user.rol === "ADMIN" && sinConfirmar.length > 0 && (
         <Alerta tipo="warn" titulo="Parámetros legales sin confirmar">
@@ -55,16 +58,16 @@ export default async function Inicio({ searchParams }: { searchParams: SP }) {
       )}
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
-        {(["BORRADOR", "CALCULADO", "REVISADO", "AUTORIZADO", "PAGADO"] as EstadoFiniquito[]).map((e) => (
-          <Link key={e} href={qs({ estado: e, pagina: 1 })} className="card block text-center transition hover:border-ink">
-            <p className="text-3xl font-black">{cuenta(e)}</p>
-            <p className="text-xs font-bold uppercase tracking-wide text-muted">{ESTADO_LABEL[e]}</p>
+        {(["BORRADOR", "CALCULADO", "REVISADO", "AUTORIZADO", "PAGADO"] as EstadoFiniquito[]).map((e, i) => (
+          <Link key={e} href={qs({ estado: e, pagina: 1 })} className={`stat stat-${i} ${i === 4 ? "col-span-2 sm:col-span-1" : ""}`}>
+            <b>{cuenta(e)}</b>
+            <span>{ESTADO_LABEL[e]}</span>
           </Link>
         ))}
       </div>
       {Number(porPagar) > 0 && <p className="text-sm font-semibold">Autorizado pendiente de pago: <b>{money(porPagar)}</b> (monto total de los autorizados, antes de restar pagos parciales).</p>}
 
-      <form className="card grid gap-3 sm:grid-cols-6" action="/">
+      <form className="card card-accent grid gap-3 pl-5 sm:grid-cols-6" action="/">
         <div className="sm:col-span-2"><label className="label">Trabajador, folio o puesto</label><input name="q" defaultValue={filtros.q} className="input" placeholder="Buscar…" /></div>
         <div><label className="label">Sucursal</label>
           <select name="sucursalId" defaultValue={filtros.sucursalId ?? ""} className="input"><option value="">Todas</option>{sucursales.map((s) => <option key={s.id} value={s.id}>{s.nombre}</option>)}</select></div>
@@ -75,7 +78,26 @@ export default async function Inicio({ searchParams }: { searchParams: SP }) {
         <div className="flex gap-2 sm:col-span-6"><button className="btn btn-dark btn-sm">Filtrar</button><Link href="/" className="btn btn-ghost btn-sm">Limpiar</Link></div>
       </form>
 
-      <section className="card p-0">
+      <section className="space-y-3 sm:hidden">
+        {lista.items.map((f) => (
+          <Link key={f.id} href={`/finiquitos/${f.id}`} className={`row-card e-${f.estado}`}>
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <p className="text-base font-extrabold leading-tight">{f.trabajadorNombre}</p>
+                <p className="text-xs text-muted">{f.puesto} · {f.sucursalNombre}</p>
+              </div>
+              <p className="whitespace-nowrap text-lg font-black">{money(f.totalNeto.toString())}</p>
+            </div>
+            <div className="mt-2 flex flex-wrap items-center gap-1.5">
+              <EstadoChip estado={f.estado} /><CalculoChip estado={f.estadoCalculo} />
+              <span className="ml-auto font-mono text-[11px] text-muted">{f.folio} · {fechaCorta(f.fechaTerminacion.toISOString().slice(0, 10))}</span>
+            </div>
+          </Link>
+        ))}
+        {!lista.items.length && <p className="card text-center text-muted">No hay finiquitos con esos filtros.</p>}
+      </section>
+
+      <section className="card hidden p-0 sm:block">
         <div className="table-wrap">
           <table className="w-full min-w-[760px] text-sm">
             <thead>

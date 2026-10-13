@@ -78,7 +78,7 @@ export function Alerta({ tipo = "info", titulo, children }: { tipo?: "info" | "w
 
 export function Seccion({ titulo, descripcion, children, abierta = true, derecha }: { titulo: ReactNode; descripcion?: ReactNode; children: ReactNode; abierta?: boolean; derecha?: ReactNode }) {
   return (
-    <details open={abierta} className="card group">
+    <details open={abierta} className="card card-accent group pl-5">
       <summary className="flex cursor-pointer list-none items-center justify-between gap-3">
         <div>
           <h3 className="text-base font-extrabold">{titulo}</h3>
@@ -86,7 +86,7 @@ export function Seccion({ titulo, descripcion, children, abierta = true, derecha
         </div>
         <div className="flex items-center gap-2">
           {derecha}
-          <span className="text-xl font-black transition group-open:rotate-45">+</span>
+          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-ink text-xl font-black text-sun transition group-open:rotate-45">+</span>
         </div>
       </summary>
       <div className="mt-4 space-y-4">{children}</div>

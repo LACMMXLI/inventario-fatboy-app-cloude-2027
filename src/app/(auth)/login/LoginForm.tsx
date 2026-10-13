@@ -30,7 +30,7 @@ export function LoginForm() {
   }
 
   return (
-    <form onSubmit={enviar} className="card space-y-4">
+    <form onSubmit={enviar} className="card space-y-4 border-0 p-6 shadow-2xl">
       <h1 className="text-xl font-extrabold">Iniciar sesión</h1>
       {error ? <Alerta tipo="error">{error}</Alerta> : null}
       <Field label="Correo electrónico">

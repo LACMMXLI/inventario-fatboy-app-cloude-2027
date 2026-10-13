@@ -131,9 +131,14 @@ export function Asistente({ meta, hoy, inicial }: { meta: Meta; hoy: string; ini
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-2">
-        <h1 className="text-2xl font-black">{inicial ? "Editar cálculo" : "Nuevo cálculo de finiquito"}</h1>
-        {calculando ? <span className="text-xs font-bold text-muted">Calculando…</span> : <span className="text-xs font-bold text-ok">Actualizado</span>}
+      <div className="hero !p-4 sm:!p-5">
+        <div className="relative z-10 flex items-center justify-between gap-2">
+          <div>
+            <p className="text-[11px] font-extrabold uppercase tracking-[.2em] text-sun">Paso {paso} de 5 · {PASOS[paso - 1]}</p>
+            <h1 className="text-2xl sm:text-3xl">{inicial ? "Editar cálculo" : "Nuevo cálculo de finiquito"}</h1>
+          </div>
+          <span className={`rounded-full px-3 py-1 text-xs font-extrabold ${calculando ? "bg-white/15 text-white" : "bg-sun text-ink"}`}>{calculando ? "Calculando…" : "● En vivo"}</span>
+        </div>
       </div>
 
       {/* Progreso */}
@@ -144,23 +149,22 @@ export function Asistente({ meta, hoy, inicial }: { meta: Meta; hoy: string; ini
           const hecho = num < paso;
           return (
             <li key={n}>
-              <button onClick={() => irA(num)} disabled={num > alcanzado} className={`w-full rounded-xl border-2 px-1 py-2 text-center text-[11px] font-bold leading-tight sm:text-sm ${activo ? "border-ink bg-sun" : hecho ? "border-ink bg-white" : "border-line bg-white text-muted"}`}>
-                <span className={`mx-auto mb-1 flex h-6 w-6 items-center justify-center rounded-full text-xs ${activo ? "bg-ink text-sun" : hecho ? "bg-ink text-white" : "bg-fog"}`}>{hecho ? "✓" : num}</span>
+              <button onClick={() => irA(num)} disabled={num > alcanzado} className={`w-full rounded-xl border-2 px-1 py-2 text-center text-[11px] font-bold leading-tight shadow-sm sm:text-sm ${activo ? "border-ink bg-gradient-to-b from-[#ffd43b] to-[#ffb300] shadow-[0_3px_0_#0b0b0c]" : hecho ? "border-ink bg-ink text-white" : "border-line bg-white text-muted"}`}>
+                <span className={`mx-auto mb-1 flex h-6 w-6 items-center justify-center rounded-full text-xs ${activo ? "bg-ink text-sun" : hecho ? "bg-sun text-ink" : "bg-fog"}`}>{hecho ? "✓" : num}</span>
                 <span className="hidden sm:inline">{n}</span>
               </button>
             </li>
           );
         })}
       </ol>
-      <p className="text-center text-sm font-bold sm:hidden">{PASOS[paso - 1]}</p>
-
+      
       {editandoBloqueado ? <Alerta tipo="warn" titulo="Finiquito autorizado o pagado">Esta captura es una corrección: al guardar deberá indicar el motivo y el finiquito volverá a estado “calculado”. El cálculo anterior se conserva en el historial.</Alerta> : null}
       {errorGeneral ? <Alerta tipo="error" titulo="No se pudo calcular">{errorGeneral}</Alerta> : null}
 
       {/* ───────── Paso 1: Empleado ───────── */}
       {paso === 1 && (
         <div className="space-y-4">
-          <section className="card grid gap-4 sm:grid-cols-2">
+          <section className="card card-accent grid gap-4 pl-5 sm:grid-cols-2">
             <Field label="Nombre completo del trabajador" error={err("trabajador.nombre")} className="sm:col-span-2">
               <Input value={f.nombre} onChange={(e) => set("nombre", e.target.value)} error={!!err("trabajador.nombre")} autoComplete="off" placeholder="Como aparece en su alta" />
             </Field>
@@ -216,7 +220,7 @@ export function Asistente({ meta, hoy, inicial }: { meta: Meta; hoy: string; ini
       {/* ───────── Paso 2: Salario ───────── */}
       {paso === 2 && (
         <div className="space-y-4">
-          <section className="card space-y-4">
+          <section className="card card-accent space-y-4 pl-5">
             <Field label="¿Cómo se paga el salario?">
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
                 {[["DIARIO", "Diario"], ["SEMANAL", "Semanal"], ["QUINCENAL", "Quincenal"], ["MENSUAL", "Mensual"], ["MINIMO", "Salario mínimo"]].map(([v, l]) => (
@@ -381,7 +385,7 @@ export function Asistente({ meta, hoy, inicial }: { meta: Meta; hoy: string; ini
           </Seccion>
 
           {resultado && (
-            <div className="sticky bottom-16 z-10 rounded-xl border-2 border-ink bg-ink px-4 py-2 text-white shadow-lg sm:bottom-2">
+            <div className="sticky bottom-24 z-10 rounded-2xl border-2 border-ink bg-gradient-to-r from-ink to-[#2a2a2f] px-4 py-2.5 text-white shadow-xl sm:bottom-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold tracking-wide text-sun">NETO A PAGAR (en vivo)</span>
                 <span className="text-xl font-black text-sun">{money(resultado.totales.netoAPagar)}</span>
@@ -426,7 +430,7 @@ export function Asistente({ meta, hoy, inicial }: { meta: Meta; hoy: string; ini
       {intentado[paso] && erroresPaso(paso).length > 0 && paso <= 3 ? <Alerta tipo="error" titulo="Revise los campos marcados" /> : null}
 
       {/* Navegación */}
-      <div className="no-print sticky bottom-14 z-20 -mx-4 flex flex-wrap items-center justify-between gap-2 border-t border-line bg-white/95 px-4 py-3 backdrop-blur sm:static sm:mx-0 sm:rounded-2xl sm:border">
+      <div className="no-print sticky bottom-[4.6rem] z-20 -mx-4 flex flex-wrap items-center justify-between gap-2 border-t-2 border-ink bg-white/95 px-4 py-3 backdrop-blur sm:bottom-2 sm:static sm:mx-0 sm:rounded-2xl sm:border">
         <button className="btn btn-ghost" disabled={paso === 1} onClick={() => irA(paso - 1)}>← Atrás</button>
         <div className="flex flex-wrap gap-2">
           {paso >= 4 && (
