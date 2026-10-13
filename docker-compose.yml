@@ -8,9 +8,6 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-fatboy}:${POSTGRES_PASSWORD:?Defina POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-fatboy}?schema=public
-      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
-      ADMIN_NAME: ${ADMIN_NAME:-Administrador}
       COOKIE_SECURE: ${COOKIE_SECURE:-true}
       SESSION_TTL_HOURS: ${SESSION_TTL_HOURS:-12}
       APP_TIMEZONE: ${APP_TIMEZONE:-America/Tijuana}

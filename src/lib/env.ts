@@ -26,15 +26,6 @@ export const env = {
   get chromiumPath() {
     return process.env.CHROMIUM_PATH || process.env.PUPPETEER_EXECUTABLE_PATH || "/usr/bin/chromium";
   },
-  get adminEmail() {
-    return process.env.ADMIN_EMAIL?.trim().toLowerCase() || null;
-  },
-  get adminPassword() {
-    return process.env.ADMIN_PASSWORD || null;
-  },
-  get adminName() {
-    return process.env.ADMIN_NAME?.trim() || "Administrador";
-  },
   get timezone() {
     return process.env.APP_TIMEZONE || "America/Tijuana";
   },
