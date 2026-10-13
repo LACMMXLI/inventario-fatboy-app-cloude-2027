@@ -56,7 +56,7 @@ export function Textarea({ error, ...p }: TextareaHTMLAttributes<HTMLTextAreaEle
 export function Toggle({ checked, onChange, label, hint }: { checked: boolean; onChange: (v: boolean) => void; label: ReactNode; hint?: ReactNode }) {
   const id = useId();
   return (
-    <label htmlFor={id} className="flex cursor-pointer items-start gap-3 rounded-xl border border-line bg-white p-3 hover:border-ink">
+    <label htmlFor={id} className="flex cursor-pointer items-start gap-2.5 rounded-xl border border-line bg-white p-2.5 hover:border-ink sm:gap-3 sm:p-3">
       <input id={id} type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="mt-1 h-5 w-5 flex-none accent-[#0b0b0c]" />
       <span>
         <span className="block text-sm font-semibold">{label}</span>
@@ -69,7 +69,7 @@ export function Toggle({ checked, onChange, label, hint }: { checked: boolean; o
 export function Alerta({ tipo = "info", titulo, children }: { tipo?: "info" | "warn" | "error" | "ok"; titulo?: ReactNode; children?: ReactNode }) {
   const c = { info: "border-ink bg-sun-soft", warn: "border-sun-deep bg-sun-soft", error: "border-fire bg-fire-soft text-[#7a1014]", ok: "border-ok bg-ok-soft text-[#14502a]" }[tipo];
   return (
-    <div className={`rounded-xl border-l-4 p-3 text-sm ${c}`}>
+    <div className={`rounded-xl border-l-4 p-2.5 text-[13px] sm:p-3 sm:text-sm ${c}`}>
       {titulo ? <p className="font-bold">{titulo}</p> : null}
       {children ? <div className={titulo ? "mt-1" : ""}>{children}</div> : null}
     </div>
@@ -81,15 +81,15 @@ export function Seccion({ titulo, descripcion, children, abierta = true, derecha
     <details open={abierta} className="card card-accent group pl-5">
       <summary className="flex cursor-pointer list-none items-center justify-between gap-3">
         <div>
-          <h3 className="text-base font-extrabold">{titulo}</h3>
+          <h3 className="text-[15px] font-extrabold leading-tight sm:text-base">{titulo}</h3>
           {descripcion ? <p className="hint">{descripcion}</p> : null}
         </div>
         <div className="flex items-center gap-2">
           {derecha}
-          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-ink text-xl font-black text-sun transition group-open:rotate-45">+</span>
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-ink text-lg font-black text-sun transition group-open:rotate-45">+</span>
         </div>
       </summary>
-      <div className="mt-4 space-y-4">{children}</div>
+      <div className="mt-3 space-y-3 sm:mt-4 sm:space-y-4">{children}</div>
     </details>
   );
 }

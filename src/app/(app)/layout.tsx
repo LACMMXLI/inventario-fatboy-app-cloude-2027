@@ -12,10 +12,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   if (!user) redirect("/login");
   const admin = user.rol === "ADMIN";
   return (
-    <div className="min-h-screen pb-24 sm:pb-0">
+    <div className="min-h-screen pb-20 sm:pb-0">
       <header className="no-print sticky top-0 z-30 bg-gradient-to-r from-ink via-[#17171a] to-ink text-white shadow-lg">
         <div className="stripe" />
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-2.5">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-3 py-2 sm:px-4 sm:py-2.5">
           <Link href="/" className="flex items-center gap-3">
             <Logo small />
             <span className="hidden text-sm font-semibold text-white/70 sm:inline">Finiquitos</span>
@@ -30,7 +30,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-6xl px-4 py-5">{children}</main>
+      <main className="mx-auto max-w-6xl px-3 py-3 sm:px-4 sm:py-5">{children}</main>
     </div>
   );
 }

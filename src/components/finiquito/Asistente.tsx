@@ -130,14 +130,14 @@ export function Asistente({ meta, hoy, inicial }: { meta: Meta; hoy: string; ini
   const editandoBloqueado = inicial && ["AUTORIZADO", "PAGADO"].includes(inicial.estado);
 
   return (
-    <div className="space-y-4">
-      <div className="hero !p-4 sm:!p-5">
+    <div className="space-y-3 sm:space-y-4">
+      <div className="hero !p-2.5 sm:!p-5">
         <div className="relative z-10 flex items-center justify-between gap-2">
           <div>
-            <p className="text-[11px] font-extrabold uppercase tracking-[.2em] text-sun">Paso {paso} de 5 · {PASOS[paso - 1]}</p>
-            <h1 className="text-2xl sm:text-3xl">{inicial ? "Editar cálculo" : "Nuevo cálculo de finiquito"}</h1>
+            <p className="text-[10px] font-extrabold uppercase tracking-[.14em] text-sun sm:text-[11px]">Paso {paso} de 5 · {PASOS[paso - 1]}</p>
+            <h1 className="text-lg sm:text-3xl">{inicial ? "Editar cálculo" : "Nuevo finiquito"}</h1>
           </div>
-          <span className={`rounded-full px-3 py-1 text-xs font-extrabold ${calculando ? "bg-white/15 text-white" : "bg-sun text-ink"}`}>{calculando ? "Calculando…" : "● En vivo"}</span>
+          <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-extrabold sm:px-3 sm:py-1 sm:text-xs ${calculando ? "bg-white/15 text-white" : "bg-sun text-ink"}`}>{calculando ? "Calculando" : "● En vivo"}</span>
         </div>
       </div>
 
@@ -149,8 +149,8 @@ export function Asistente({ meta, hoy, inicial }: { meta: Meta; hoy: string; ini
           const hecho = num < paso;
           return (
             <li key={n}>
-              <button onClick={() => irA(num)} disabled={num > alcanzado} className={`w-full rounded-xl border-2 px-1 py-2 text-center text-[11px] font-bold leading-tight shadow-sm sm:text-sm ${activo ? "border-ink bg-gradient-to-b from-[#ffd43b] to-[#ffb300] shadow-[0_3px_0_#0b0b0c]" : hecho ? "border-ink bg-ink text-white" : "border-line bg-white text-muted"}`}>
-                <span className={`mx-auto mb-1 flex h-6 w-6 items-center justify-center rounded-full text-xs ${activo ? "bg-ink text-sun" : hecho ? "bg-sun text-ink" : "bg-fog"}`}>{hecho ? "✓" : num}</span>
+              <button onClick={() => irA(num)} disabled={num > alcanzado} className={`w-full rounded-xl border-2 px-1 py-1 text-center text-[11px] font-bold leading-tight shadow-sm sm:text-sm ${activo ? "border-ink bg-gradient-to-b from-[#ffd43b] to-[#ffb300] shadow-[0_3px_0_#0b0b0c]" : hecho ? "border-ink bg-ink text-white" : "border-line bg-white text-muted"}`}>
+                <span className={`mx-auto flex h-5 w-5 sm:mb-1 sm:h-6 sm:w-6 items-center justify-center rounded-full text-xs ${activo ? "bg-ink text-sun" : hecho ? "bg-sun text-ink" : "bg-fog"}`}>{hecho ? "✓" : num}</span>
                 <span className="hidden sm:inline">{n}</span>
               </button>
             </li>
@@ -164,8 +164,8 @@ export function Asistente({ meta, hoy, inicial }: { meta: Meta; hoy: string; ini
       {/* ───────── Paso 1: Empleado ───────── */}
       {paso === 1 && (
         <div className="space-y-4">
-          <section className="card card-accent grid gap-4 pl-5 sm:grid-cols-2">
-            <Field label="Nombre completo del trabajador" error={err("trabajador.nombre")} className="sm:col-span-2">
+          <section className="card card-accent grid grid-cols-2 gap-x-2.5 gap-y-2.5 pl-5 sm:gap-4">
+            <Field label="Nombre completo del trabajador" error={err("trabajador.nombre")} className="col-span-2">
               <Input value={f.nombre} onChange={(e) => set("nombre", e.target.value)} error={!!err("trabajador.nombre")} autoComplete="off" placeholder="Como aparece en su alta" />
             </Field>
             <Field label="Puesto" error={err("trabajador.puesto")}>
@@ -177,28 +177,28 @@ export function Asistente({ meta, hoy, inicial }: { meta: Meta; hoy: string; ini
                 {meta.sucursales.map((s) => <option key={s.id} value={s.id}>{s.nombre}</option>)}
               </Select>
             </Field>
-            <Field label="Fecha de ingreso" error={err("fechaIngreso")} hint="Primer día de trabajo">
+            <Field label="Ingreso" error={err("fechaIngreso")} hint="Primer día de trabajo">
               <Input type="date" value={f.fechaIngreso} max={hoy} onChange={(e) => set("fechaIngreso", e.target.value)} error={!!err("fechaIngreso")} />
             </Field>
-            <Field label="Fecha de terminación" error={err("fechaTerminacion")} hint="Último día de la relación laboral">
+            <Field label="Terminación" error={err("fechaTerminacion")} hint="Último día laborado">
               <Input type="date" value={f.fechaTerminacion} onChange={(e) => set("fechaTerminacion", e.target.value)} error={!!err("fechaTerminacion")} />
             </Field>
-            <Field label="Motivo de separación" className="sm:col-span-2">
+            <Field label="Motivo de separación" className="col-span-2">
               <Select value={f.motivo} onChange={(e) => set("motivo", e.target.value)}>
                 {MOTIVOS.map((m) => <option key={m} value={m}>{MOTIVO_LABEL[m]}</option>)}
               </Select>
             </Field>
             {f.motivo === "RENUNCIA_VOLUNTARIA" && (
-              <div className="sm:col-span-2">
+              <div className="col-span-2">
                 <Toggle checked={f.voluntadRenuncia} onChange={(v) => set("voluntadRenuncia", v)} label="El trabajador manifestó por sí mismo su voluntad de renunciar" hint="Solo si es cierto. Habilita la carta de renuncia para su revisión (nunca se genera firmada)." />
               </div>
             )}
             {["DESPIDO_JUSTIFICADO", "DESPIDO_INJUSTIFICADO", "RESCISION_IMPUTABLE_PATRON", "FALLECIMIENTO", "OTRA_CAUSA", "MUTUO_CONSENTIMIENTO"].includes(f.motivo) && (
-              <Field label={f.motivo === "FALLECIMIENTO" ? "Beneficiarios (art. 501 LFT)" : "Detalle del motivo / causa"} className="sm:col-span-2" hint={f.motivo === "DESPIDO_JUSTIFICADO" ? "Describa la causa del art. 47 LFT y confirme que se entregó el aviso de rescisión." : undefined}>
-                <Textarea value={f.detalleMotivo} onChange={(e) => set("detalleMotivo", e.target.value)} maxLength={1000} />
+              <Field label={f.motivo === "FALLECIMIENTO" ? "Beneficiarios (art. 501 LFT)" : "Detalle del motivo / causa"} className="col-span-2" hint={f.motivo === "DESPIDO_JUSTIFICADO" ? "Describa la causa del art. 47 LFT y confirme que se entregó el aviso de rescisión." : undefined}>
+                <Textarea className="!min-h-16" value={f.detalleMotivo} onChange={(e) => set("detalleMotivo", e.target.value)} maxLength={1000} />
               </Field>
             )}
-            <Field label="Tipo de contrato">
+            <Field label="Contrato" className="col-span-2">
               <Select value={f.tipoContrato} onChange={(e) => set("tipoContrato", e.target.value as FormState["tipoContrato"])}>
                 <option value="INDETERMINADO">Tiempo indeterminado (de planta)</option>
                 <option value="DETERMINADO">Tiempo u obra determinada</option>
@@ -206,12 +206,12 @@ export function Asistente({ meta, hoy, inicial }: { meta: Meta; hoy: string; ini
             </Field>
           </section>
           <Seccion titulo="Datos de identificación (opcionales)" descripcion="Solo si desea que aparezcan en los registros." abierta={false}>
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
               <Field label="CURP"><Input value={f.curp} maxLength={18} onChange={(e) => set("curp", e.target.value.toUpperCase())} /></Field>
               <Field label="RFC del trabajador"><Input value={f.rfc} maxLength={13} onChange={(e) => set("rfc", e.target.value.toUpperCase())} /></Field>
               <Field label="NSS"><Input value={f.nss} maxLength={11} onChange={(e) => set("nss", e.target.value)} /></Field>
               <Field label="Número de empleado"><Input value={f.numeroEmpleado} maxLength={30} onChange={(e) => set("numeroEmpleado", e.target.value)} /></Field>
-              <Field label="Fecha en que se pagará (si es distinta a la terminación)" hint="Define el ejercicio fiscal, la UMA y la tarifa de ISR aplicables."><Input type="date" value={f.fechaPago} onChange={(e) => set("fechaPago", e.target.value)} /></Field>
+              <Field className="col-span-2" label="Fecha de pago (si difiere)" hint="Define el ejercicio fiscal, la UMA y la tarifa de ISR aplicables."><Input type="date" value={f.fechaPago} onChange={(e) => set("fechaPago", e.target.value)} /></Field>
             </div>
           </Seccion>
         </div>
@@ -222,9 +222,9 @@ export function Asistente({ meta, hoy, inicial }: { meta: Meta; hoy: string; ini
         <div className="space-y-4">
           <section className="card card-accent space-y-4 pl-5">
             <Field label="¿Cómo se paga el salario?">
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
-                {[["DIARIO", "Diario"], ["SEMANAL", "Semanal"], ["QUINCENAL", "Quincenal"], ["MENSUAL", "Mensual"], ["MINIMO", "Salario mínimo"]].map(([v, l]) => (
-                  <button key={v} type="button" onClick={() => set("salarioTipo", v)} className={`rounded-xl border-2 px-3 py-3 text-sm font-bold ${f.salarioTipo === v ? "border-ink bg-sun" : "border-line bg-white hover:border-ink"}`}>{l}</button>
+              <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-5 sm:gap-2">
+                {[["DIARIO", "Diario"], ["SEMANAL", "Semanal"], ["QUINCENAL", "Quincenal"], ["MENSUAL", "Mensual"], ["MINIMO", "Mínimo"]].map(([v, l]) => (
+                  <button key={v} type="button" onClick={() => set("salarioTipo", v)} className={`rounded-xl border-2 px-2 py-2 text-[13px] font-bold sm:px-3 sm:py-3 sm:text-sm ${f.salarioTipo === v ? "border-ink bg-sun" : "border-line bg-white hover:border-ink"}`}>{l}</button>
                 ))}
               </div>
             </Field>
@@ -237,7 +237,7 @@ export function Asistente({ meta, hoy, inicial }: { meta: Meta; hoy: string; ini
                 {smZona ? <>Ejercicio {ejercicio?.anio}: <b>{money(smZona)}</b> diarios ({f.zona === "ZLFN" ? "Zona Libre de la Frontera Norte" : "resto del país"}).</> : "No hay un ejercicio capturado para esa fecha."}
               </Alerta>
             )}
-            <Field label="Zona geográfica del salario mínimo" hint="Mexicali pertenece a la Zona Libre de la Frontera Norte (ZLFN).">
+            <Field label="Zona del salario mínimo" hint="Mexicali: Zona Libre de la Frontera Norte.">
               <Select value={f.zona} onChange={(e) => set("zona", e.target.value as FormState["zona"])}>
                 <option value="ZLFN">Zona Libre de la Frontera Norte{ejercicio ? ` – ${money(ejercicio.salarioMinimoZlfn)}` : ""}</option>
                 <option value="GENERAL">Zona del Salario Mínimo General{ejercicio ? ` – ${money(ejercicio.salarioMinimoGeneral)}` : ""}</option>
@@ -245,7 +245,7 @@ export function Asistente({ meta, hoy, inicial }: { meta: Meta; hoy: string; ini
             </Field>
             <Toggle checked={f.minimoProf} onChange={(v) => set("minimoProf", v)} label="El puesto tiene salario mínimo profesional" hint="Aplica solo a oficios de la tabla de la CONASAMI. Se usa como referencia mínima y para el tope de la prima de antigüedad." />
             {f.minimoProf && (
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
                 <Field label="Ocupación (CONASAMI)"><Input value={f.ocupacionProf} onChange={(e) => set("ocupacionProf", e.target.value)} list="profesionales" />
                   <datalist id="profesionales">{(ejercicio?.profesionales ?? []).map((p) => <option key={p.clave} value={p.ocupacion} />)}</datalist></Field>
                 <Field label="Salario mínimo profesional diario" error={err("salario.minimoProfesionalDiario")}>
@@ -260,11 +260,11 @@ export function Asistente({ meta, hoy, inicial }: { meta: Meta; hoy: string; ini
             </Alerta>
           )}
           <Seccion titulo="Integración del salario (avanzado)" descripcion="Solo si la empresa otorga más que la ley o hay percepciones fijas adicionales." abierta={false}>
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
               <Field label="Días de aguinaldo al año" error={err("integracion.aguinaldoDias")} hint="Mínimo legal: 15"><Num value={f.aguinaldoDias} onChange={(v) => set("aguinaldoDias", v)} suffix="días" error={!!err("integracion.aguinaldoDias")} /></Field>
               <Field label="Prima vacacional" error={err("integracion.primaVacacionalPct")} hint="Mínimo legal: 25%"><Num value={f.primaPct} onChange={(v) => set("primaPct", v)} suffix="%" error={!!err("integracion.primaVacacionalPct")} /></Field>
-              <Field label="Otras percepciones diarias que integran salario" hint="Bonos fijos, despensa en efectivo, etc. (art. 84 LFT). Solo afecta indemnizaciones."><Money value={f.otrasPercepciones} onChange={(v) => set("otrasPercepciones", v)} /></Field>
-              <Field label="Salario diario integrado conocido" hint="Si ya lo tiene calculado, reemplaza al estimado."><Money value={f.sdiManual} onChange={(v) => set("sdiManual", v)} /></Field>
+              <Field label="Otras percepciones diarias" hint="Bonos fijos, despensa en efectivo (art. 84 LFT). Solo indemnizaciones."><Money value={f.otrasPercepciones} onChange={(v) => set("otrasPercepciones", v)} /></Field>
+              <Field label="SDI conocido" hint="Si ya lo tiene, reemplaza al estimado."><Money value={f.sdiManual} onChange={(v) => set("sdiManual", v)} /></Field>
             </div>
           </Seccion>
         </div>
@@ -272,13 +272,13 @@ export function Asistente({ meta, hoy, inicial }: { meta: Meta; hoy: string; ini
 
       {/* ───────── Paso 3: Prestaciones y pagos ───────── */}
       {paso === 3 && (
-        <div className="space-y-3">
-          <Alerta tipo="info">Solo capture lo que aplique. Todo lo que deje vacío se asume en cero y los conceptos se calculan solos.</Alerta>
+        <div className="space-y-2 sm:space-y-3">
+          <Alerta tipo="info">Capture solo lo que aplique: lo vacío se asume en cero y todo se calcula solo.</Alerta>
 
           <Seccion titulo="Sueldos pendientes" descripcion="¿Hasta qué día se le pagó?" derecha={resultado ? <b className="text-sm">{money(resultado.conceptos.find((c) => c.clave === "SUELDOS_PENDIENTES")?.saldo ?? 0)}</b> : null}>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-1.5">
               <button type="button" onClick={() => set("sueldosModo", "FECHA")} className={`rounded-xl border-2 px-3 py-2 text-sm font-bold ${f.sueldosModo === "FECHA" ? "border-ink bg-sun" : "border-line"}`}>Por fecha</button>
-              <button type="button" onClick={() => set("sueldosModo", "DIAS")} className={`rounded-xl border-2 px-3 py-2 text-sm font-bold ${f.sueldosModo === "DIAS" ? "border-ink bg-sun" : "border-line"}`}>Por número de días</button>
+              <button type="button" onClick={() => set("sueldosModo", "DIAS")} className={`rounded-xl border-2 px-3 py-2 text-sm font-bold ${f.sueldosModo === "DIAS" ? "border-ink bg-sun" : "border-line"}`}>Por días</button>
             </div>
             {f.sueldosModo === "FECHA" ? (
               <Field label="Último día pagado" error={err("sueldos.ultimoDiaPagado")} hint="Se pagan los días posteriores hasta la terminación (inclusive).">
@@ -292,10 +292,10 @@ export function Asistente({ meta, hoy, inicial }: { meta: Meta; hoy: string; ini
           </Seccion>
 
           <Seccion titulo="Vacaciones" descripcion="Se calculan según la antigüedad (art. 76 LFT)." derecha={resultado ? <b className="text-sm">{money(resultado.conceptos.find((c) => c.clave === "VACACIONES")?.saldo ?? 0)}</b> : null}>
-            <div className="grid gap-4 sm:grid-cols-3">
-              <Field label="Disfrutadas este año de servicio" error={err("vacaciones.diasDisfrutadosCicloActual")}><Num value={f.vacDisfrutadas} onChange={(v) => set("vacDisfrutadas", v)} suffix="días" /></Field>
-              <Field label="Pendientes de años anteriores" hint="Solo si no las tomó"><Num value={f.vacPendAnt} onChange={(v) => set("vacPendAnt", v)} suffix="días" /></Field>
-              <Field label="Ya pagadas en dinero"><Num value={f.vacPagadas} onChange={(v) => set("vacPagadas", v)} suffix="días" /></Field>
+            <div className="grid grid-cols-3 gap-2 sm:gap-4">
+              <Field label="Disfrutadas (este año)" error={err("vacaciones.diasDisfrutadosCicloActual")}><Num value={f.vacDisfrutadas} onChange={(v) => set("vacDisfrutadas", v)} suffix="días" /></Field>
+              <Field label="De años previos" hint="Solo si no las tomó"><Num value={f.vacPendAnt} onChange={(v) => set("vacPendAnt", v)} suffix="días" /></Field>
+              <Field label="Pagadas en $"><Num value={f.vacPagadas} onChange={(v) => set("vacPagadas", v)} suffix="días" /></Field>
             </div>
             {resultado && <p className="hint">{resultado.conceptos.find((c) => c.clave === "VACACIONES")?.diasDetalle}</p>}
           </Seccion>
@@ -312,9 +312,9 @@ export function Asistente({ meta, hoy, inicial }: { meta: Meta; hoy: string; ini
           </Seccion>
 
           <Seccion titulo="Aguinaldo" derecha={resultado ? <b className="text-sm">{money(resultado.conceptos.find((c) => c.clave === "AGUINALDO")?.saldo ?? 0)}</b> : null}>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Aguinaldo del año ya pagado (monto)" hint="Anticipos o pago parcial."><Money value={f.aguinaldoPagado} onChange={(v) => set("aguinaldoPagado", v)} /></Field>
-              <Field label="Días de aguinaldo de años anteriores sin pagar"><Num value={f.aguinaldoAntDias} onChange={(v) => set("aguinaldoAntDias", v)} suffix="días" /></Field>
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
+              <Field label="Aguinaldo ya pagado" hint="Anticipo o pago parcial."><Money value={f.aguinaldoPagado} onChange={(v) => set("aguinaldoPagado", v)} /></Field>
+              <Field label="Días de años previos"><Num value={f.aguinaldoAntDias} onChange={(v) => set("aguinaldoAntDias", v)} suffix="días" /></Field>
             </div>
           </Seccion>
 
@@ -328,8 +328,8 @@ export function Asistente({ meta, hoy, inicial }: { meta: Meta; hoy: string; ini
           <Seccion titulo="Otros pagos o prestaciones pendientes" descripcion="Bonos, comisiones, prestaciones contractuales, pago pactado por mutuo consentimiento…" abierta={f.otros.length > 0}>
             {f.otros.map((o, i) => (
               <div key={i} className="space-y-3 rounded-xl border border-line p-3">
-                <div className="grid gap-3 sm:grid-cols-3">
-                  <Field label="Concepto" error={err(`otrosConceptos.${i}.nombre`)}><Input value={o.nombre} onChange={(e) => set("otros", f.otros.map((x, j) => (j === i ? { ...x, nombre: e.target.value } : x)))} /></Field>
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3">
+                  <Field className="col-span-2 sm:col-span-1" label="Concepto" error={err(`otrosConceptos.${i}.nombre`)}><Input value={o.nombre} onChange={(e) => set("otros", f.otros.map((x, j) => (j === i ? { ...x, nombre: e.target.value } : x)))} /></Field>
                   <Field label="Importe"><Money value={o.monto} onChange={(v) => set("otros", f.otros.map((x, j) => (j === i ? { ...x, monto: v } : x)))} /></Field>
                   <Field label="Ya pagado"><Money value={o.pagado} onChange={(v) => set("otros", f.otros.map((x, j) => (j === i ? { ...x, pagado: v } : x)))} /></Field>
                 </div>
@@ -362,12 +362,12 @@ export function Asistente({ meta, hoy, inicial }: { meta: Meta; hoy: string; ini
           <Seccion titulo="Deducciones" descripcion="Solo se aplican si cumplen el art. 110 LFT. Las demás se muestran como no aplicadas." abierta={f.deducciones.length > 0}>
             {f.deducciones.map((d, i) => (
               <div key={i} className="space-y-3 rounded-xl border border-line p-3">
-                <div className="grid gap-3 sm:grid-cols-3">
-                  <Field label="Tipo"><Select value={d.tipo} onChange={(e) => set("deducciones", f.deducciones.map((x, j) => (j === i ? { ...x, tipo: e.target.value } : x)))}>{TIPOS_DEDUCCION.map((t) => <option key={t} value={t}>{TIPO_DEDUCCION_LABEL[t]}</option>)}</Select></Field>
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3">
+                  <Field className="col-span-2 sm:col-span-1" label="Tipo"><Select value={d.tipo} onChange={(e) => set("deducciones", f.deducciones.map((x, j) => (j === i ? { ...x, tipo: e.target.value } : x)))}>{TIPOS_DEDUCCION.map((t) => <option key={t} value={t}>{TIPO_DEDUCCION_LABEL[t]}</option>)}</Select></Field>
                   <Field label="Descripción" error={err(`deducciones.${i}.descripcion`)}><Input value={d.descripcion} onChange={(e) => set("deducciones", f.deducciones.map((x, j) => (j === i ? { ...x, descripcion: e.target.value } : x)))} /></Field>
                   <Field label="Monto"><Money value={d.monto} onChange={(v) => set("deducciones", f.deducciones.map((x, j) => (j === i ? { ...x, monto: v } : x)))} /></Field>
                 </div>
-                <div className="grid gap-2 sm:grid-cols-2">
+                <div className="grid gap-1.5 sm:grid-cols-2 sm:gap-2">
                   <Toggle checked={d.sustento} onChange={(v) => set("deducciones", f.deducciones.map((x, j) => (j === i ? { ...x, sustento: v } : x)))} label="Cuento con el documento que lo sustenta" hint="Pagaré, recibo, orden judicial, aviso, etc." />
                   <Toggle checked={d.consent} onChange={(v) => set("deducciones", f.deducciones.map((x, j) => (j === i ? { ...x, consent: v } : x)))} label="El trabajador lo autorizó por escrito" />
                 </div>
@@ -378,17 +378,17 @@ export function Asistente({ meta, hoy, inicial }: { meta: Meta; hoy: string; ini
           </Seccion>
 
           <Seccion titulo="Datos fiscales (avanzado)" descripcion="Opcional: si no se capturan, se derivan del salario." abierta={false}>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Último sueldo mensual ordinario" hint="Para la retención de pagos por separación (art. 95/96 LISR)."><Money value={f.ultimoSueldoMensual} onChange={(v) => set("ultimoSueldoMensual", v)} /></Field>
-              <Field label="Ingreso ordinario mensual regular" hint="Para la retención de aguinaldo y prima (art. 174 RISR)."><Money value={f.ingresoOrdMensual} onChange={(v) => set("ingresoOrdMensual", v)} /></Field>
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
+              <Field label="Último sueldo mensual" hint="Para la retención de pagos por separación (art. 95/96 LISR)."><Money value={f.ultimoSueldoMensual} onChange={(v) => set("ultimoSueldoMensual", v)} /></Field>
+              <Field label="Ingreso ordinario mensual" hint="Para la retención de aguinaldo y prima (art. 174 RISR)."><Money value={f.ingresoOrdMensual} onChange={(v) => set("ingresoOrdMensual", v)} /></Field>
             </div>
           </Seccion>
 
           {resultado && (
-            <div className="sticky bottom-24 z-10 rounded-2xl border-2 border-ink bg-gradient-to-r from-ink to-[#2a2a2f] px-4 py-2.5 text-white shadow-xl sm:bottom-2">
+            <div className="sticky bottom-[4.25rem] z-10 rounded-xl border-2 border-ink bg-gradient-to-r from-ink to-[#2a2a2f] px-3 py-1.5 sm:rounded-2xl sm:px-4 sm:py-2.5 text-white shadow-xl sm:bottom-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold tracking-wide text-sun">NETO A PAGAR (en vivo)</span>
-                <span className="text-xl font-black text-sun">{money(resultado.totales.netoAPagar)}</span>
+                <span className="text-lg font-black text-sun sm:text-xl">{money(resultado.totales.netoAPagar)}</span>
               </div>
             </div>
           )}
@@ -411,7 +411,7 @@ export function Asistente({ meta, hoy, inicial }: { meta: Meta; hoy: string; ini
       {paso === 5 && (
         <div className="space-y-4">
           <div className="flex flex-wrap gap-2">
-            {([["recibo", "Recibo y desglose"], ["desglose", "Desglose explicativo"], ["carta", "Carta de renuncia"]] as const).map(([t, l]) => (
+            {([["recibo", "Recibo"], ["desglose", "Desglose"], ["carta", "Carta"]] as const).map(([t, l]) => (
               <button key={t} onClick={() => setDocTipo(t)} className={`btn btn-sm ${docTipo === t ? "btn-dark" : "btn-ghost"}`}>{l}</button>
             ))}
           </div>
@@ -422,35 +422,33 @@ export function Asistente({ meta, hoy, inicial }: { meta: Meta; hoy: string; ini
           ) : (
             <Alerta tipo="warn">Complete los datos para ver la vista previa.</Alerta>
           )}
-          <Alerta tipo="info" titulo="Guarde para imprimir o exportar">Al guardar se asigna folio y quedan habilitados Imprimir, PDF y PNG. Estos documentos se generan en el servidor.</Alerta>
+          <p className="hint">Al guardar se asigna folio y se habilitan Imprimir, PDF y PNG (generados en el servidor).</p>
         </div>
       )}
 
       {errorGuardar ? <Alerta tipo="error">{errorGuardar}</Alerta> : null}
       {intentado[paso] && erroresPaso(paso).length > 0 && paso <= 3 ? <Alerta tipo="error" titulo="Revise los campos marcados" /> : null}
 
-      {/* Navegación */}
-      <div className="no-print sticky bottom-[4.6rem] z-20 -mx-4 flex flex-wrap items-center justify-between gap-2 border-t-2 border-ink bg-white/95 px-4 py-3 backdrop-blur sm:bottom-2 sm:static sm:mx-0 sm:rounded-2xl sm:border">
-        <button className="btn btn-ghost" disabled={paso === 1} onClick={() => irA(paso - 1)}>← Atrás</button>
-        <div className="flex flex-wrap gap-2">
-          {paso >= 4 && (
-            <>
-              {!editandoBloqueado && <button className="btn btn-ghost" disabled={guardando || !resultado} onClick={() => guardar(false)}>Guardar borrador</button>}
-              {!editandoBloqueado ? (
-                <button className="btn btn-dark" disabled={guardando || !resultado || resultado.estado === "INCOMPLETO"} onClick={() => guardar(true)} title={resultado?.estado === "INCOMPLETO" ? "Resuelva los pendientes bloqueantes" : ""}>{guardando ? "Guardando…" : "Guardar y calcular"}</button>
-              ) : (
-                <CorreccionBoton disabled={guardando || !resultado || !inicial} onConfirm={async (motivo) => {
-                  setGuardando(true); setErrorGuardar(null);
-                  const r = await fetch(`/api/finiquitos/${inicial!.id}/correccion`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ datos: payload, motivo, version: inicial!.version }) });
-                  const j = await r.json();
-                  setGuardando(false);
-                  if (!r.ok) setErrorGuardar(j.error ?? "No se pudo corregir");
-                  else { router.push(`/finiquitos/${inicial!.id}`); router.refresh(); }
-                }} />
-              )}
-            </>
-          )}
-          {paso < 5 && <button className="btn btn-primary" onClick={siguiente}>{paso === 3 ? "Ver resultado →" : "Siguiente →"}</button>}
+      {/* Navegación: una sola fila compacta */}
+      <div className="no-print action-bar sticky bottom-[3.6rem] z-20 -mx-3 border-t-2 border-ink bg-white/95 px-3 py-2 backdrop-blur sm:bottom-2 sm:mx-0 sm:flex-row sm:items-center sm:justify-between sm:rounded-2xl sm:border-2 sm:px-3">
+        <div className="fila sm:order-1">
+          <button className="btn btn-ghost ico" aria-label="Atrás" disabled={paso === 1} onClick={() => irA(paso - 1)}>←</button>
+          {paso >= 4 && (<>
+            {!editandoBloqueado && <button className="btn btn-ghost btn-sm sm:btn" disabled={guardando || !resultado} onClick={() => guardar(false)}><span className="sm:hidden">Borrador</span><span className="hidden sm:inline">Guardar borrador</span></button>}
+            {!editandoBloqueado ? (
+              <button className="btn btn-dark btn-sm sm:btn" disabled={guardando || !resultado || resultado.estado === "INCOMPLETO"} onClick={() => guardar(true)} title={resultado?.estado === "INCOMPLETO" ? "Resuelva los pendientes bloqueantes" : ""}>{guardando ? "Guardando…" : <><span className="sm:hidden">Guardar</span><span className="hidden sm:inline">Guardar y calcular</span></>}</button>
+            ) : (
+              <CorreccionBoton disabled={guardando || !resultado || !inicial} onConfirm={async (motivo) => {
+                setGuardando(true); setErrorGuardar(null);
+                const r = await fetch(`/api/finiquitos/${inicial!.id}/correccion`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ datos: payload, motivo, version: inicial!.version }) });
+                const j = await r.json();
+                setGuardando(false);
+                if (!r.ok) setErrorGuardar(j.error ?? "No se pudo corregir");
+                else { router.push(`/finiquitos/${inicial!.id}`); router.refresh(); }
+              }} />
+            )}
+          </>)}
+          {paso < 5 ? <button className="btn btn-primary" onClick={siguiente}>{paso === 3 ? "Ver resultado →" : paso === 4 ? "Docs →" : "Siguiente →"}</button> : paso < 4 ? null : <span className="hidden flex-1 text-xs font-bold text-muted sm:block">Guarde para imprimir o exportar</span>}
         </div>
       </div>
     </div>
@@ -464,7 +462,7 @@ function CorreccionBoton({ onConfirm, disabled }: { onConfirm: (motivo: string) 
   const [motivo, setMotivo] = useState("");
   return (
     <>
-      <button className="btn btn-danger" disabled={disabled} onClick={() => setAbierto(true)}>Guardar corrección…</button>
+      <button className="btn btn-danger btn-sm sm:btn" disabled={disabled} onClick={() => setAbierto(true)}>Guardar corrección…</button>
       {abierto && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-4 sm:items-center">
           <div className="card w-full max-w-md space-y-3">

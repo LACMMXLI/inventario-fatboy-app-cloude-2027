@@ -8,17 +8,17 @@ export function TotalNeto({ r, etiqueta = "TOTAL NETO A PAGAR" }: { r: Resultado
   const prov = r.estado !== "DEFINITIVO";
   return (
     <div className="hero !p-0">
-      <div className="relative z-10 flex flex-wrap items-end justify-between gap-3 p-5 pb-6">
+      <div className="relative z-10 flex flex-wrap items-end justify-between gap-3 p-4 pb-5 sm:p-5 sm:pb-6">
         <div>
           <p className="text-xs font-bold tracking-widest text-sun">{etiqueta}</p>
-          <p className="text-5xl font-black leading-none text-sun drop-shadow sm:text-6xl">{money(r.totales.netoAPagar)}</p>
+          <p className="text-[2.4rem] font-black leading-none text-sun drop-shadow sm:text-6xl">{money(r.totales.netoAPagar)}</p>
           {prov ? (
             <p className="mt-2 inline-block rounded bg-fire px-2 py-0.5 text-xs font-bold">
               {r.estado === "INCOMPLETO" ? "CÁLCULO INCOMPLETO" : "PROVISIONAL – pendiente de validación fiscal"}
             </p>
           ) : null}
         </div>
-        <dl className="grid grid-cols-2 gap-x-6 gap-y-1 text-sm text-white/80">
+        <dl className="grid w-full grid-cols-[auto_1fr] gap-x-4 gap-y-0.5 text-xs text-white/80 sm:w-auto sm:grid-cols-2 sm:gap-x-6 sm:gap-y-1 sm:text-sm">
           <dt>Total bruto</dt><dd className="text-right font-bold text-white">{money(r.totales.saldoBruto)}</dd>
           <dt>ISR retenido</dt><dd className="text-right font-bold text-white">−{money(r.totales.retenciones)}</dd>
           {Number(r.totales.deduccionesAplicadas) > 0 ? <><dt>Deducciones</dt><dd className="text-right font-bold text-white">−{money(r.totales.deduccionesAplicadas)}</dd></> : null}
@@ -52,19 +52,28 @@ export function ResultView({ r }: { r: ResultadoFiniquito }) {
   const aplicables = r.conceptos.filter((c) => c.aplica);
   const noAplican = r.conceptos.filter((c) => !c.aplica);
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       <TotalNeto r={r} />
       <EstadoCalculoBanner r={r} />
 
-      <div className="grid gap-3 sm:grid-cols-3">
-        <div className="card card-accent pl-5"><p className="label">Antigüedad exacta</p><p className="text-lg font-extrabold">{a.texto}</p><p className="hint">{a.diasTotales} días naturales · {num(a.aniosDecimal, 4)} años</p></div>
-        <div className="card card-accent pl-5"><p className="label">Salario diario</p><p className="text-lg font-extrabold">{money(r.salario.diario)}</p><p className="hint">{r.salario.explicacion}</p></div>
-        <div className="card card-accent pl-5"><p className="label">Salario diario integrado</p><p className="text-lg font-extrabold">{money(r.salario.diarioIntegrado)}</p><p className="hint">Factor {r.salario.factorIntegracion} · base de las indemnizaciones</p></div>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3">
+        <div className="card card-accent col-span-2 pl-5 sm:col-span-1"><p className="label">Antigüedad exacta</p><p className="text-base font-extrabold sm:text-lg">{a.texto}</p><p className="hint hidden sm:block">{a.diasTotales} días naturales · {num(a.aniosDecimal, 4)} años</p></div>
+        <div className="card card-accent pl-5"><p className="label">Salario diario</p><p className="text-base font-extrabold sm:text-lg">{money(r.salario.diario)}</p><p className="hint hidden sm:block">{r.salario.explicacion}</p></div>
+        <div className="card card-accent pl-5"><p className="label">Salario diario integrado</p><p className="text-base font-extrabold sm:text-lg">{money(r.salario.diarioIntegrado)}</p><p className="hint">Factor {r.salario.factorIntegracion}<span className="hidden sm:inline"> · base de las indemnizaciones</span></p></div>
       </div>
 
       <section className="card">
         <h3 className="mb-2 text-base font-extrabold">Desglose por concepto</h3>
-        <div className="table-wrap">
+        <ul className="divide-y divide-line sm:hidden">
+          {aplicables.map((c) => (
+            <li key={c.clave} className="py-2">
+              <div className="flex items-baseline justify-between gap-2"><span className="text-sm font-bold leading-tight">{c.nombre}</span><span className="text-base font-black">{money(c.saldo)}</span></div>
+              <p className="text-[11px] text-muted">{c.dias ?? ""} · gen. {money(c.generado)} − pag. {money(c.pagadoPreviamente)} · ISR {money(c.fiscal.isr)}{c.fiscal.estado === "PROVISIONAL" ? " (prov.)" : ""}</p>
+            </li>
+          ))}
+          <li className="flex items-baseline justify-between pt-2 text-sm font-extrabold"><span>Bruto · ISR</span><span>{money(r.totales.saldoBruto)} · −{money(r.totales.retenciones)}</span></li>
+        </ul>
+        <div className="table-wrap hidden sm:block">
           <table className="w-full min-w-[640px] text-sm">
             <thead>
               <tr className="border-b-2 border-ink bg-sun-soft text-left text-xs uppercase tracking-wide">
@@ -96,13 +105,13 @@ export function ResultView({ r }: { r: ResultadoFiniquito }) {
         {aplicables.map((c) => (
           <details key={c.clave} className="card">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-2">
-              <span className="font-bold">{c.nombre}</span>
-              <span className="rounded-full bg-sun px-3 py-0.5 text-sm font-extrabold">{money(c.saldo)}</span>
+              <span className="text-sm font-bold sm:text-base">{c.nombre}</span>
+              <span className="shrink-0 rounded-full bg-sun px-2.5 py-0.5 text-xs font-extrabold sm:px-3 sm:text-sm">{money(c.saldo)}</span>
             </summary>
             <div className="mt-3 space-y-2 text-sm">
               <p>{c.explicacion}</p>
               <p className="rounded-lg border-l-4 border-sun bg-sun-soft px-3 py-2 font-mono text-xs break-words">{c.formula}</p>
-              <dl className="grid gap-x-4 gap-y-1 sm:grid-cols-2">
+              <dl className="grid gap-x-4 gap-y-1.5 sm:grid-cols-2">
                 <div><dt className="label">Días considerados</dt><dd>{c.dias ?? "—"}{c.diasDetalle ? <span className="block text-xs text-muted">{c.diasDetalle}</span> : null}</dd></div>
                 <div><dt className="label">Base salarial</dt><dd>{c.baseSalarial ? `${c.baseSalarial.etiqueta}: ${money(c.baseSalarial.monto)}` : "—"}</dd></div>
                 <div><dt className="label">Generado − pagado = saldo</dt><dd>{money(c.generado)} − {money(c.pagadoPreviamente)} = <b>{money(c.saldo)}</b></dd></div>

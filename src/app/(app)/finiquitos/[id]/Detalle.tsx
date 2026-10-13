@@ -56,16 +56,16 @@ export function Detalle({ f, resultado, pagos, revisiones, rol }: { f: F; result
   ];
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-3 sm:space-y-5">
       <div className="hero">
        <div className="relative z-10 flex flex-wrap items-start justify-between gap-4">
         <div>
           <Link href="/" className="text-xs font-extrabold uppercase tracking-widest text-sun">← Finiquitos</Link>
-          <h1 className="mt-1 text-3xl">{f.trabajador}</h1>
-          <p className="text-sm text-white/70">{f.folio} · {f.puesto} · {f.sucursal} · versión {f.version}</p>
+          <h1 className="mt-0.5 text-xl sm:mt-1 sm:text-3xl">{f.trabajador}</h1>
+          <p className="text-xs text-white/70 sm:text-sm">{f.folio} · {f.puesto} · {f.sucursal} · v{f.version}</p>
           <div className="mt-2 flex gap-2"><EstadoChip estado={f.estado} /><CalculoChip estado={f.estadoCalculo} /></div>
         </div>
-        <div className="flex w-full flex-wrap gap-2 sm:w-auto">
+        <div className="flex flex-wrap gap-1.5 sm:gap-2">
           {["BORRADOR", "CALCULADO", "REVISADO"].includes(f.estado) && <Link href={`/finiquitos/${f.id}/editar`} className="btn btn-ghost">Editar</Link>}
           {["AUTORIZADO", "PAGADO"].includes(f.estado) && puedeAutorizar && <Link href={`/finiquitos/${f.id}/editar`} className="btn btn-ghost">Corregir (documentado)</Link>}
           {f.estado === "BORRADOR" && <button className="btn btn-dark" disabled={ocupado} onClick={() => estado("CALCULAR")}>Marcar como calculado</button>}
@@ -82,21 +82,24 @@ export function Detalle({ f, resultado, pagos, revisiones, rol }: { f: F; result
       {f.validacionManual && <Alerta tipo="warn" titulo="Autorizado con validación manual de pendientes">Por {f.validacionManual.por} el {fechaLarga(f.validacionManual.en.slice(0, 10))}: “{f.validacionManual.nota}”</Alerta>}
       {resultado.estado === "INCOMPLETO" && <Alerta tipo="error" titulo="Cálculo incompleto">No puede autorizarse hasta resolver los pendientes bloqueantes.</Alerta>}
 
-      <div className="grid gap-3 text-sm sm:grid-cols-4">
-        <div className="card card-accent pl-5"><p className="label">Creado por</p><b>{f.creadoPor ?? "—"}</b><p className="hint">{fechaCorta(f.creadoEn.slice(0, 10))}</p></div>
-        <div className="card card-accent pl-5"><p className="label">Última modificación</p><b>{f.modificadoPor ?? f.creadoPor ?? "—"}</b><p className="hint">{fechaCorta(f.actualizadoEn.slice(0, 10))}</p></div>
-        <div className="card card-accent pl-5"><p className="label">Revisó</p><b>{f.revisadoPor ?? "—"}</b><p className="hint">{f.revisadoEn ? fechaCorta(f.revisadoEn.slice(0, 10)) : "pendiente"}</p></div>
-        <div className="card card-accent pl-5"><p className="label">Autorizó</p><b>{f.autorizadoPor ?? "—"}</b><p className="hint">{f.autorizadoEn ? fechaCorta(f.autorizadoEn.slice(0, 10)) : "pendiente"}</p></div>
+      <div className="card card-accent grid grid-cols-2 gap-x-3 gap-y-2 pl-5 text-sm sm:grid-cols-4">
+        {([["Creado por", f.creadoPor, f.creadoEn], ["Modificó", f.modificadoPor ?? f.creadoPor, f.actualizadoEn], ["Revisó", f.revisadoPor, f.revisadoEn], ["Autorizó", f.autorizadoPor, f.autorizadoEn]] as [string, string | null, string | null][]).map(([t, quien, cuando]) => (
+          <div key={t} className="min-w-0">
+            <p className="label !mb-0">{t}</p>
+            <p className="truncate font-bold leading-tight">{quien ?? "—"}</p>
+            <p className="text-[11px] text-muted">{cuando ? fechaCorta(cuando.slice(0, 10)) : "pendiente"}</p>
+          </div>
+        ))}
       </div>
 
       <section className="card">
-        <h2 className="mb-3 text-lg font-extrabold">Documentos</h2>
-        <div className="grid gap-3 sm:grid-cols-3">
+        <h2 className="mb-2 text-base font-extrabold sm:mb-3 sm:text-lg">Documentos</h2>
+        <div className="grid gap-2 sm:grid-cols-3 sm:gap-3">
           {docs.map((d) => (
-            <div key={d.tipo} className={`rounded-xl border-2 p-3 ${d.ok ? "border-line" : "border-line bg-fog opacity-70"}`}>
+            <div key={d.tipo} className={`rounded-xl border-2 p-2.5 sm:p-3 ${d.ok ? "border-line" : "border-line bg-fog opacity-70"}`}>
               <p className="font-bold">{d.titulo}</p>
               {d.ok ? (
-                <div className="mt-2 flex flex-wrap gap-2">
+                <div className="mt-1.5 flex flex-wrap gap-1.5 sm:mt-2 sm:gap-2">
                   <Link className="btn btn-dark btn-sm" href={`/finiquitos/${f.id}/documentos/${d.tipo}`}>Vista previa</Link>
                   <button className="btn btn-ghost btn-sm" onClick={() => imprimirDocumento(f.id, d.tipo)}>Imprimir</button>
                   <a className="btn btn-ghost btn-sm" href={urlDocumento(f.id, d.tipo, "pdf")}>PDF</a>
@@ -106,7 +109,7 @@ export function Detalle({ f, resultado, pagos, revisiones, rol }: { f: F; result
             </div>
           ))}
         </div>
-        <p className="hint mt-2">Los archivos se generan en el servidor y se conservan con su huella SHA-256. {vigentes.length ? "El recibo incluye los pagos registrados." : "Mientras no haya pagos registrados, el recibo se emite como cálculo pendiente de pago y no acredita pago alguno."}</p>
+        <p className="hint mt-2 hidden sm:block">Los archivos se generan en el servidor y se conservan con su huella SHA-256. {vigentes.length ? "El recibo incluye los pagos registrados." : "Mientras no haya pagos registrados, el recibo se emite como cálculo pendiente de pago y no acredita pago alguno."}</p>
       </section>
 
       {["AUTORIZADO", "PAGADO"].includes(f.estado) && <Pagos f={f} pagos={pagos} saldo={saldo} pagado={pagado} puede={puedeAutorizar} onError={setError} />}
@@ -114,8 +117,16 @@ export function Detalle({ f, resultado, pagos, revisiones, rol }: { f: F; result
       <ResultView r={resultado} />
 
       <section className="card">
-        <h2 className="mb-2 text-lg font-extrabold">Historial de modificaciones</h2>
-        <div className="table-wrap">
+        <h2 className="mb-2 text-base font-extrabold sm:text-lg">Historial de modificaciones</h2>
+        <ul className="divide-y divide-line text-sm sm:hidden">
+          {revisiones.map((r) => (
+            <li key={r.id} className="py-1.5">
+              <div className="flex justify-between gap-2"><b>v{r.version} · {TIPO_REV[r.tipo] ?? r.tipo}</b><span className="text-[11px] text-muted">{fechaCorta(r.creadoEn.slice(0, 10))}</span></div>
+              <p className="text-xs text-muted">{r.userNombre}{r.motivo ? ` — ${r.motivo}` : ""}</p>
+            </li>
+          ))}
+        </ul>
+        <div className="table-wrap hidden sm:block">
           <table className="w-full min-w-[560px] text-sm">
             <thead><tr className="border-b-2 border-ink text-left text-xs uppercase text-muted"><th className="py-2">Versión</th><th>Movimiento</th><th>Detalle</th><th>Usuario</th><th>Fecha</th></tr></thead>
             <tbody>
@@ -128,7 +139,7 @@ export function Detalle({ f, resultado, pagos, revisiones, rol }: { f: F; result
             </tbody>
           </table>
         </div>
-        <p className="hint mt-2">Cada versión conserva los datos, el resultado y los parámetros legales usados. Nada se sobrescribe en silencio.</p>
+        <p className="hint mt-2 hidden sm:block">Cada versión conserva los datos, el resultado y los parámetros legales usados. Nada se sobrescribe en silencio.</p>
       </section>
 
       {modal && (
@@ -187,12 +198,12 @@ function Pagos({ f, pagos, saldo, pagado, puede, onError }: { f: F; pagos: P[]; 
         </ul>
       )}
       {f.estado === "AUTORIZADO" && puede && saldo > 0 && (
-        <div className="grid items-end gap-3 rounded-xl bg-fog p-3 sm:grid-cols-5">
+        <div className="grid grid-cols-2 items-end gap-2 rounded-xl bg-fog p-2.5 sm:grid-cols-5 sm:gap-3 sm:p-3">
           <Field label="Monto pagado"><Money value={monto} onChange={setMonto} /></Field>
           <Field label="Fecha de pago"><Input type="date" max={hoy} value={fecha} onChange={(e) => setFecha(e.target.value)} /></Field>
           <Field label="Forma"><Select value={forma} onChange={(e) => setForma(e.target.value)}><option value="TRANSFERENCIA">Transferencia</option><option value="EFECTIVO">Efectivo</option><option value="CHEQUE">Cheque</option><option value="OTRO">Otro</option></Select></Field>
           <Field label="Referencia"><Input value={ref} onChange={(e) => setRef(e.target.value)} placeholder="Folio, cheque…" /></Field>
-          <button className="btn btn-primary" disabled={ocupado || !monto} onClick={() => post(`/api/finiquitos/${f.id}/pagos`, { monto: Number(monto), fechaPago: fecha, forma, referencia: ref || null })}>Registrar pago</button>
+          <button className="btn btn-primary col-span-2 sm:col-span-1" disabled={ocupado || !monto} onClick={() => post(`/api/finiquitos/${f.id}/pagos`, { monto: Number(monto), fechaPago: fecha, forma, referencia: ref || null })}>Registrar pago</button>
         </div>
       )}
       <p className="hint">Registre solo pagos que efectivamente se hicieron. El recibo en PDF acredita únicamente los pagos listados aquí.</p>

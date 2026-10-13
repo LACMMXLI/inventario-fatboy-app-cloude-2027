@@ -5,6 +5,7 @@ import { listarFiniquitos } from "@/lib/server/finiquitos";
 import { usuarioActual } from "@/lib/server/auth";
 import { cargarCatalogo } from "@/lib/server/parametros";
 import { CalculoChip, EstadoChip, Alerta } from "@/components/ui";
+import { FiltrosForm } from "@/components/FiltrosForm";
 import { ESTADO_LABEL } from "@/lib/estados";
 import { money } from "@/lib/money";
 import { fechaCorta } from "@/lib/fechas";
@@ -39,27 +40,27 @@ export default async function Inicio({ searchParams }: { searchParams: SP }) {
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-3 sm:space-y-5">
       <section className="hero">
-        <div className="relative z-10 flex flex-wrap items-end justify-between gap-4">
+        <div className="relative z-10 flex items-center justify-between gap-3">
           <div>
-            <p className="text-xs font-extrabold uppercase tracking-[.2em] text-sun">Fatboy · Mexicali, B.C.</p>
-            <h1 className="mt-1 text-3xl sm:text-4xl">Finiquitos<br className="sm:hidden" /> y terminación laboral</h1>
-            <p className="mt-2 max-w-md text-sm text-white/75">Hola, {user.nombre}. Calcula, revisa, autoriza y documenta cada salida con respaldo legal.</p>
+            <p className="text-[10px] font-extrabold uppercase tracking-[.18em] text-sun sm:text-xs">Fatboy · Mexicali, B.C.</p>
+            <h1 className="text-2xl sm:mt-1 sm:text-4xl">Finiquitos <span className="hidden sm:inline">y terminación laboral</span></h1>
+            <p className="mt-2 hidden max-w-md text-sm text-white/75 sm:block">Hola, {user.nombre}. Calcula, revisa, autoriza y documenta cada salida con respaldo legal.</p>
           </div>
-          <Link href="/finiquitos/nuevo" className="btn btn-primary w-full text-base sm:w-auto">+ Nuevo cálculo</Link>
+          <Link href="/finiquitos/nuevo" className="btn btn-primary shrink-0 sm:text-base">+ Nuevo</Link>
         </div>
       </section>
 
       {user.rol === "ADMIN" && sinConfirmar.length > 0 && (
         <Alerta tipo="warn" titulo="Parámetros legales sin confirmar">
-          Los ejercicios {sinConfirmar.join(", ")} tienen datos pendientes o sin contrastar con la fuente oficial, por lo que los cálculos salen como <b>PROVISIONALES</b>. <Link className="font-bold underline" href="/admin/parametros">Revisar y confirmar parámetros</Link>.
+          <span className="hidden sm:inline">Los ejercicios {sinConfirmar.join(", ")} tienen datos pendientes o sin contrastar con la fuente oficial, por lo que los cálculos salen como <b>PROVISIONALES</b>. </span><span className="sm:hidden">Los cálculos salen <b>PROVISIONALES</b> hasta confirmarlos. </span><Link className="font-bold underline" href="/admin/parametros">Confirmar parámetros</Link>.
         </Alerta>
       )}
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+      <div className="grid grid-cols-5 gap-1.5 sm:gap-3">
         {(["BORRADOR", "CALCULADO", "REVISADO", "AUTORIZADO", "PAGADO"] as EstadoFiniquito[]).map((e, i) => (
-          <Link key={e} href={qs({ estado: e, pagina: 1 })} className={`stat stat-${i} ${i === 4 ? "col-span-2 sm:col-span-1" : ""}`}>
+          <Link key={e} href={qs({ estado: e, pagina: 1 })} className={`stat stat-${i}`}>
             <b>{cuenta(e)}</b>
             <span>{ESTADO_LABEL[e]}</span>
           </Link>
@@ -67,18 +68,23 @@ export default async function Inicio({ searchParams }: { searchParams: SP }) {
       </div>
       {Number(porPagar) > 0 && <p className="text-sm font-semibold">Autorizado pendiente de pago: <b>{money(porPagar)}</b> (monto total de los autorizados, antes de restar pagos parciales).</p>}
 
-      <form className="card card-accent grid gap-3 pl-5 sm:grid-cols-6" action="/">
-        <div className="sm:col-span-2"><label className="label">Trabajador, folio o puesto</label><input name="q" defaultValue={filtros.q} className="input" placeholder="Buscar…" /></div>
-        <div><label className="label">Sucursal</label>
-          <select name="sucursalId" defaultValue={filtros.sucursalId ?? ""} className="input"><option value="">Todas</option>{sucursales.map((s) => <option key={s.id} value={s.id}>{s.nombre}</option>)}</select></div>
-        <div><label className="label">Estado</label>
-          <select name="estado" defaultValue={estado ?? ""} className="input"><option value="">Todos</option>{Object.entries(ESTADO_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></div>
-        <div><label className="label">Terminación desde</label><input type="date" name="desde" defaultValue={filtros.desde} className="input" /></div>
-        <div><label className="label">hasta</label><input type="date" name="hasta" defaultValue={filtros.hasta} className="input" /></div>
-        <div className="flex gap-2 sm:col-span-6"><button className="btn btn-dark btn-sm">Filtrar</button><Link href="/" className="btn btn-ghost btn-sm">Limpiar</Link></div>
-      </form>
+      <FiltrosForm
+        activos={[filtros.sucursalId, estado, filtros.desde, filtros.hasta].filter(Boolean).length}
+        buscar={<><label className="label">Trabajador, folio o puesto</label><input name="q" defaultValue={filtros.q} className="input" placeholder="Buscar…" /></>}
+        extra={
+          <>
+            <div><label className="label">Sucursal</label>
+              <select name="sucursalId" defaultValue={filtros.sucursalId ?? ""} className="input"><option value="">Todas</option>{sucursales.map((s) => <option key={s.id} value={s.id}>{s.nombre}</option>)}</select></div>
+            <div><label className="label">Estado</label>
+              <select name="estado" defaultValue={estado ?? ""} className="input"><option value="">Todos</option>{Object.entries(ESTADO_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></div>
+            <div><label className="label">Desde</label><input type="date" name="desde" defaultValue={filtros.desde} className="input" /></div>
+            <div><label className="label">Hasta</label><input type="date" name="hasta" defaultValue={filtros.hasta} className="input" /></div>
+            <div className="col-span-2 flex gap-2 sm:col-span-6"><button className="btn btn-dark btn-sm">Filtrar</button><Link href="/" className="btn btn-ghost btn-sm">Limpiar</Link></div>
+          </>
+        }
+      />
 
-      <section className="space-y-3 sm:hidden">
+      <section className="space-y-2 sm:hidden">
         {lista.items.map((f) => (
           <Link key={f.id} href={`/finiquitos/${f.id}`} className={`row-card e-${f.estado}`}>
             <div className="flex items-start justify-between gap-2">

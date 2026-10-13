@@ -36,26 +36,26 @@ export function Visor({ id, tipo, d }: { id: string; tipo: TipoDocumento; d: Doc
   const exportBloqueado = tipo === "carta" && !guardado;
 
   return (
-    <div className="space-y-4">
-      <div className="no-print flex flex-wrap items-center justify-between gap-3">
+    <div className="space-y-3">
+      <div className="no-print flex flex-wrap items-center justify-between gap-2">
         <div>
           <Link href={`/finiquitos/${id}`} className="text-sm font-bold underline">← Volver al finiquito</Link>
-          <h1 className="text-xl font-black">{TITULOS[tipo]}</h1>
+          <h1 className="text-lg font-black sm:text-xl">{TITULOS[tipo]}</h1>
           <p className="hint">{d.folio} · versión {d.version}</p>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <button className="btn btn-dark" disabled={exportBloqueado} onClick={() => imprimirDocumento(id, tipo)}>Imprimir</button>
-          <a className={`btn btn-ghost ${exportBloqueado ? "pointer-events-none opacity-50" : ""}`} href={urlDocumento(id, tipo, "pdf")}>Descargar PDF</a>
-          <a className={`btn btn-ghost ${exportBloqueado ? "pointer-events-none opacity-50" : ""}`} href={urlDocumento(id, tipo, "png")}>Descargar PNG</a>
+        <div className="grid w-full grid-cols-3 gap-1.5 sm:flex sm:w-auto sm:gap-2">
+          <button className="btn btn-dark btn-sm sm:btn" disabled={exportBloqueado} onClick={() => imprimirDocumento(id, tipo)}>Imprimir</button>
+          <a className={`btn btn-ghost btn-sm sm:btn ${exportBloqueado ? "pointer-events-none opacity-50" : ""}`} href={urlDocumento(id, tipo, "pdf")}>PDF</a>
+          <a className={`btn btn-ghost btn-sm sm:btn ${exportBloqueado ? "pointer-events-none opacity-50" : ""}`} href={urlDocumento(id, tipo, "png")}>PNG</a>
         </div>
       </div>
 
       {tipo === "carta" && (
         <section className="card no-print space-y-3">
           <Alerta tipo="warn" titulo="Revise antes de imprimir">El texto se generó únicamente con los datos capturados. Edítelo si hace falta y márquelo como revisado. La carta nunca se firma ni se marca como firmada: la firma debe ser autógrafa del trabajador.</Alerta>
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
             <Field label="Lugar"><Input value={carta.lugar} onChange={(e) => cambiar({ lugar: e.target.value })} /></Field>
-            <Field label="Fecha de la carta"><Input type="date" value={carta.fecha} onChange={(e) => cambiar({ fecha: e.target.value })} /></Field>
+            <Field label="Fecha"><Input type="date" value={carta.fecha} onChange={(e) => cambiar({ fecha: e.target.value })} /></Field>
             <Field label="Dirigida a"><Input value={carta.destinatario} onChange={(e) => cambiar({ destinatario: e.target.value })} /></Field>
             <Field label="Atención"><Input value={carta.atencion} onChange={(e) => cambiar({ atencion: e.target.value })} /></Field>
           </div>
