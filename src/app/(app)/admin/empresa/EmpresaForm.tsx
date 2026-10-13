@@ -31,35 +31,35 @@ export function EmpresaForm({ empresa, sucursales }: { empresa: E; sucursales: S
   }
 
   return (
-    <div className="space-y-5">
-      <h1 className="text-2xl font-black">Datos de la empresa</h1>
-      <Alerta tipo="info">Esta información aparece en los documentos. No se inventa nada: los datos que no capture se imprimen como “No configurado”.</Alerta>
-      <section className="card grid gap-4 sm:grid-cols-2">
-        <Field label="Nombre comercial"><Input value={e.nombreComercial} onChange={(x) => set("nombreComercial", x.target.value)} /></Field>
-        <Field label="Razón social"><Input value={e.razonSocial} onChange={(x) => set("razonSocial", x.target.value)} placeholder="Como aparece en su constancia fiscal" /></Field>
+    <div className="space-y-3 sm:space-y-5">
+      <div className="hero !p-3 sm:!p-5"><div className="relative z-10"><p className="text-[10px] font-extrabold uppercase tracking-[.16em] text-sun">Administración</p><h1 className="text-xl sm:text-3xl">Datos de la empresa</h1></div></div>
+      <Alerta tipo="info">Aparece en los documentos. Lo que no capture se imprime como “No configurado”.</Alerta>
+      <section className="card card-accent grid grid-cols-2 gap-x-2.5 gap-y-2.5 pl-5 sm:gap-4">
+        <Field label="Nombre comercial" className="col-span-2 sm:col-span-1"><Input value={e.nombreComercial} onChange={(x) => set("nombreComercial", x.target.value)} /></Field>
+        <Field label="Razón social" className="col-span-2 sm:col-span-1"><Input value={e.razonSocial} onChange={(x) => set("razonSocial", x.target.value)} placeholder="Como aparece en su constancia fiscal" /></Field>
         <Field label="RFC"><Input value={e.rfc} maxLength={13} onChange={(x) => set("rfc", x.target.value.toUpperCase())} /></Field>
-        <Field label="Registro patronal (IMSS)"><Input value={e.registroPatronal} onChange={(x) => set("registroPatronal", x.target.value)} /></Field>
-        <Field label="Domicilio fiscal" className="sm:col-span-2"><Input value={e.domicilioFiscal} onChange={(x) => set("domicilioFiscal", x.target.value)} /></Field>
+        <Field label="Reg. patronal (IMSS)"><Input value={e.registroPatronal} onChange={(x) => set("registroPatronal", x.target.value)} /></Field>
+        <Field label="Domicilio fiscal" className="col-span-2"><Input value={e.domicilioFiscal} onChange={(x) => set("domicilioFiscal", x.target.value)} /></Field>
         <Field label="Ciudad"><Input value={e.ciudad} onChange={(x) => set("ciudad", x.target.value)} /></Field>
         <Field label="Estado"><Input value={e.estado} onChange={(x) => set("estado", x.target.value)} /></Field>
-        <Field label="Representante legal"><Input value={e.representanteLegal} onChange={(x) => set("representanteLegal", x.target.value)} /></Field>
-        <Field label="Cargo del representante"><Input value={e.cargoRepresentante} onChange={(x) => set("cargoRepresentante", x.target.value)} /></Field>
+        <Field label="Representante legal" className="col-span-2 sm:col-span-1"><Input value={e.representanteLegal} onChange={(x) => set("representanteLegal", x.target.value)} /></Field>
+        <Field label="Cargo" className="col-span-2 sm:col-span-1"><Input value={e.cargoRepresentante} onChange={(x) => set("cargoRepresentante", x.target.value)} /></Field>
         <Field label="Teléfono"><Input value={e.telefono} onChange={(x) => set("telefono", x.target.value)} /></Field>
-        <Field label="Correo"><Input type="email" value={e.correo} onChange={(x) => set("correo", x.target.value)} /></Field>
-        <Field label="Zona salarial por omisión" hint="Mexicali: Zona Libre de la Frontera Norte.">
+        <Field label="Correo" className="col-span-2 sm:col-span-1"><Input type="email" value={e.correo} onChange={(x) => set("correo", x.target.value)} /></Field>
+        <Field label="Zona salarial por omisión" className="col-span-2" hint="Mexicali: Zona Libre de la Frontera Norte.">
           <Select value={e.zonaSalarialDefault} onChange={(x) => set("zonaSalarialDefault", x.target.value)}><option value="ZLFN">Zona Libre de la Frontera Norte</option><option value="GENERAL">Zona del Salario Mínimo General</option></Select>
         </Field>
       </section>
       {msg && <Alerta tipo={msg.t === "ok" ? "ok" : "error"}>{msg.m}</Alerta>}
-      <button className="btn btn-primary" onClick={guardar}>Guardar datos de la empresa</button>
+      <button className="btn btn-primary w-full sm:w-auto" onClick={guardar}>Guardar datos de la empresa</button>
 
-      <section className="card space-y-3">
-        <h2 className="text-lg font-extrabold">Sucursales</h2>
+      <section className="card card-accent space-y-3 pl-5">
+        <h2 className="text-base font-extrabold sm:text-lg">Sucursales</h2>
         <ul className="divide-y divide-line">
           {sucs.map((s) => (
-            <li key={s.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
+            <li key={s.id} className="grid grid-cols-[1fr_auto] items-center gap-2 py-1.5">
               <span className={s.activa ? "font-bold" : "text-muted line-through"}>{s.nombre}</span>
-              <Toggle checked={s.activa} onChange={(v) => guardarSucursal({ ...s, activa: v })} label={s.activa ? "Activa" : "Inactiva"} />
+              <label className="flex cursor-pointer items-center gap-2 text-sm font-bold"><input type="checkbox" className="h-5 w-5 accent-black" checked={s.activa} onChange={(e) => guardarSucursal({ ...s, activa: e.target.checked })} />{s.activa ? "Activa" : "Inactiva"}</label>
             </li>
           ))}
         </ul>

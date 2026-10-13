@@ -79,12 +79,12 @@ export default async function Inicio({ searchParams }: { searchParams: SP }) {
               <select name="estado" defaultValue={estado ?? ""} className="input"><option value="">Todos</option>{Object.entries(ESTADO_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></div>
             <div><label className="label">Desde</label><input type="date" name="desde" defaultValue={filtros.desde} className="input" /></div>
             <div><label className="label">Hasta</label><input type="date" name="hasta" defaultValue={filtros.hasta} className="input" /></div>
-            <div className="col-span-2 flex gap-2 sm:col-span-6"><button className="btn btn-dark btn-sm">Filtrar</button><Link href="/" className="btn btn-ghost btn-sm">Limpiar</Link></div>
+            <div className="col-span-2 flex gap-2 sm:col-span-3 lg:col-span-6"><button className="btn btn-dark btn-sm">Filtrar</button><Link href="/" className="btn btn-ghost btn-sm">Limpiar</Link></div>
           </>
         }
       />
 
-      <section className="space-y-2 sm:hidden">
+      <section className="grid gap-2 sm:grid-cols-2 sm:gap-3 lg:hidden">
         {lista.items.map((f) => (
           <Link key={f.id} href={`/finiquitos/${f.id}`} className={`row-card e-${f.estado}`}>
             <div className="flex items-start justify-between gap-2">
@@ -103,7 +103,7 @@ export default async function Inicio({ searchParams }: { searchParams: SP }) {
         {!lista.items.length && <p className="card text-center text-muted">No hay finiquitos con esos filtros.</p>}
       </section>
 
-      <section className="card hidden p-0 sm:block">
+      <section className="card hidden p-0 lg:block">
         <div className="table-wrap">
           <table className="w-full min-w-[760px] text-sm">
             <thead>

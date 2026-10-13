@@ -385,7 +385,7 @@ export function Asistente({ meta, hoy, inicial }: { meta: Meta; hoy: string; ini
           </Seccion>
 
           {resultado && (
-            <div className="sticky bottom-[4.25rem] z-10 rounded-xl border-2 border-ink bg-gradient-to-r from-ink to-[#2a2a2f] px-3 py-1.5 sm:rounded-2xl sm:px-4 sm:py-2.5 text-white shadow-xl sm:bottom-2">
+            <div className="sticky bottom-[4.25rem] z-10 lg:bottom-2 rounded-xl border-2 border-ink bg-gradient-to-r from-ink to-[#2a2a2f] px-3 py-1.5 sm:rounded-2xl sm:px-4 sm:py-2.5 text-white shadow-xl sm:bottom-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold tracking-wide text-sun">NETO A PAGAR (en vivo)</span>
                 <span className="text-lg font-black text-sun sm:text-xl">{money(resultado.totales.netoAPagar)}</span>
@@ -430,13 +430,13 @@ export function Asistente({ meta, hoy, inicial }: { meta: Meta; hoy: string; ini
       {intentado[paso] && erroresPaso(paso).length > 0 && paso <= 3 ? <Alerta tipo="error" titulo="Revise los campos marcados" /> : null}
 
       {/* Navegación: una sola fila compacta */}
-      <div className="no-print action-bar sticky bottom-[3.6rem] z-20 -mx-3 border-t-2 border-ink bg-white/95 px-3 py-2 backdrop-blur sm:bottom-2 sm:mx-0 sm:flex-row sm:items-center sm:justify-between sm:rounded-2xl sm:border-2 sm:px-3">
-        <div className="fila sm:order-1">
+      <div className="no-print action-bar sticky bottom-[3.6rem] z-20 -mx-3 border-t-2 border-ink bg-white/95 px-3 py-2 backdrop-blur sm:mx-auto sm:max-w-2xl sm:rounded-2xl sm:border-2 lg:bottom-2 lg:mx-0 lg:max-w-none lg:flex-row lg:items-center lg:justify-between">
+        <div className="fila lg:order-1">
           <button className="btn btn-ghost ico" aria-label="Atrás" disabled={paso === 1} onClick={() => irA(paso - 1)}>←</button>
           {paso >= 4 && (<>
-            {!editandoBloqueado && <button className="btn btn-ghost btn-sm sm:btn" disabled={guardando || !resultado} onClick={() => guardar(false)}><span className="sm:hidden">Borrador</span><span className="hidden sm:inline">Guardar borrador</span></button>}
+            {!editandoBloqueado && <button className="btn btn-ghost btn-sm lg:btn" disabled={guardando || !resultado} onClick={() => guardar(false)}><span className="lg:hidden">Borrador</span><span className="hidden lg:inline">Guardar borrador</span></button>}
             {!editandoBloqueado ? (
-              <button className="btn btn-dark btn-sm sm:btn" disabled={guardando || !resultado || resultado.estado === "INCOMPLETO"} onClick={() => guardar(true)} title={resultado?.estado === "INCOMPLETO" ? "Resuelva los pendientes bloqueantes" : ""}>{guardando ? "Guardando…" : <><span className="sm:hidden">Guardar</span><span className="hidden sm:inline">Guardar y calcular</span></>}</button>
+              <button className="btn btn-dark btn-sm lg:btn" disabled={guardando || !resultado || resultado.estado === "INCOMPLETO"} onClick={() => guardar(true)} title={resultado?.estado === "INCOMPLETO" ? "Resuelva los pendientes bloqueantes" : ""}>{guardando ? "Guardando…" : <><span className="lg:hidden">Guardar</span><span className="hidden lg:inline">Guardar y calcular</span></>}</button>
             ) : (
               <CorreccionBoton disabled={guardando || !resultado || !inicial} onConfirm={async (motivo) => {
                 setGuardando(true); setErrorGuardar(null);
@@ -448,7 +448,7 @@ export function Asistente({ meta, hoy, inicial }: { meta: Meta; hoy: string; ini
               }} />
             )}
           </>)}
-          {paso < 5 ? <button className="btn btn-primary" onClick={siguiente}>{paso === 3 ? "Ver resultado →" : paso === 4 ? "Docs →" : "Siguiente →"}</button> : paso < 4 ? null : <span className="hidden flex-1 text-xs font-bold text-muted sm:block">Guarde para imprimir o exportar</span>}
+          {paso < 5 ? <button className="btn btn-primary" onClick={siguiente}>{paso === 3 ? "Ver resultado →" : paso === 4 ? "Docs →" : "Siguiente →"}</button> : paso < 4 ? null : <span className="hidden flex-1 text-xs font-bold text-muted lg:block">Guarde para imprimir o exportar</span>}
         </div>
       </div>
     </div>
@@ -462,7 +462,7 @@ function CorreccionBoton({ onConfirm, disabled }: { onConfirm: (motivo: string) 
   const [motivo, setMotivo] = useState("");
   return (
     <>
-      <button className="btn btn-danger btn-sm sm:btn" disabled={disabled} onClick={() => setAbierto(true)}>Guardar corrección…</button>
+      <button className="btn btn-danger btn-sm lg:btn" disabled={disabled} onClick={() => setAbierto(true)}>Guardar corrección…</button>
       {abierto && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-4 sm:items-center">
           <div className="card w-full max-w-md space-y-3">

@@ -20,10 +20,10 @@ export function Nav({ admin }: { admin: boolean }) {
   ];
   return (
     <>
-      <nav className="hidden items-center gap-1 text-sm sm:flex">
+      <nav className="hidden items-center gap-1 text-sm lg:flex">
         {items.map((x) => <Link key={x.h} href={x.h} className={`nav-link ${on(x.h) ? "on" : ""}`}>{x.t === "Nuevo" ? "+ Nuevo cálculo" : x.t === "Parámetros" ? "Parámetros legales" : x.t}</Link>)}
       </nav>
-      <nav className="tabbar no-print sm:hidden" style={{ gridTemplateColumns: `repeat(${items.length},1fr)` }}>
+      <nav className="tabbar no-print lg:hidden" style={{ gridTemplateColumns: `repeat(${items.length},1fr)` }}>
         {items.map((x) => <Link key={x.h} href={x.h} className={on(x.h) ? "on" : ""}>{x.i}{x.t}</Link>)}
       </nav>
     </>

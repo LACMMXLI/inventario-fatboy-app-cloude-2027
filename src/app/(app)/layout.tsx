@@ -12,17 +12,17 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   if (!user) redirect("/login");
   const admin = user.rol === "ADMIN";
   return (
-    <div className="min-h-screen pb-20 sm:pb-0">
+    <div className="min-h-screen pb-20 lg:pb-0">
       <header className="no-print sticky top-0 z-30 bg-gradient-to-r from-ink via-[#17171a] to-ink text-white shadow-lg">
         <div className="stripe" />
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-3 py-2 sm:px-4 sm:py-2.5">
           <Link href="/" className="flex items-center gap-3">
             <Logo small />
-            <span className="hidden text-sm font-semibold text-white/70 sm:inline">Finiquitos</span>
+            <span className="hidden text-sm font-semibold text-white/70 xl:inline">Finiquitos</span>
           </Link>
           <Nav admin={admin} />
           <div className="flex items-center gap-3 text-xs">
-            <span className="hidden text-right leading-tight sm:block">
+            <span className="hidden text-right leading-tight md:block">
               <b className="block text-sm">{user.nombre}</b>
               <span className="text-white/60">{user.rol.toLowerCase()}</span>
             </span>
