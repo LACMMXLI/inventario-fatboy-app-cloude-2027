@@ -1,0 +1,235 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Rol {
+  ADMIN // todo, incluidos usuarios, configuración y parámetros legales
+  AUTORIZADOR // revisa, autoriza, registra pagos y correcciones
+  OPERADOR // captura y calcula; puede marcar como revisado
+}
+
+enum EstadoFiniquito {
+  BORRADOR
+  CALCULADO
+  REVISADO
+  AUTORIZADO
+  PAGADO
+}
+
+enum TipoRevision {
+  CREACION
+  MODIFICACION
+  CAMBIO_ESTADO
+  CORRECCION
+  PAGO
+  ANULACION_PAGO
+  VALIDACION_FISCAL
+}
+
+model User {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  nombre         String
+  passwordHash   String
+  rol            Rol       @default(OPERADOR)
+  activo         Boolean   @default(true)
+  intentosFallidos Int     @default(0)
+  bloqueadoHasta DateTime?
+  ultimoAcceso   DateTime?
+  creadoEn       DateTime  @default(now())
+  actualizadoEn  DateTime  @updatedAt
+
+  sesiones Session[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiraEn  DateTime
+  ip        String?
+  userAgent String?
+  creadoEn  DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiraEn])
+}
+
+/// Datos de la empresa (una sola fila, id = "empresa"). Todo configurable; nada se inventa.
+model Empresa {
+  id                 String   @id @default("empresa")
+  nombreComercial    String   @default("Fatboy")
+  razonSocial        String?
+  rfc                String?
+  registroPatronal   String?
+  domicilioFiscal    String?
+  ciudad             String   @default("Mexicali")
+  estado             String   @default("Baja California")
+  pais               String   @default("México")
+  representanteLegal String   @default("Joseph Anthony Baez Cárdenas")
+  cargoRepresentante String?  @default("Representante legal")
+  telefono           String?
+  correo             String?
+  zonaSalarialDefault String  @default("ZLFN")
+  actualizadoEn      DateTime @updatedAt
+  actualizadoPor     String?
+}
+
+model Sucursal {
+  id          String      @id @default(cuid())
+  nombre      String      @unique
+  domicilio   String?
+  activa      Boolean     @default(true)
+  orden       Int         @default(0)
+  finiquitos  Finiquito[]
+}
+
+/// Parámetros legales por ejercicio (salarios mínimos, UMA, tarifa ISR, exenciones, reglas laborales)
+model ParametroLegal {
+  anio          Int      @id
+  datos         Json
+  creadoEn      DateTime @default(now())
+  actualizadoEn DateTime @updatedAt
+  actualizadoPor String?
+}
+
+model Finiquito {
+  id        String          @id @default(cuid())
+  folio     String          @unique
+  estado    EstadoFiniquito @default(BORRADOR)
+  version   Int             @default(1)
+
+  trabajadorNombre String
+  puesto           String
+  sucursalId       String?
+  sucursal         Sucursal? @relation(fields: [sucursalId], references: [id], onDelete: SetNull)
+  sucursalNombre   String
+  fechaIngreso     DateTime @db.Date
+  fechaTerminacion DateTime @db.Date
+  motivo           String
+
+  /// Datos capturados vigentes (JSON validado por el motor)
+  datos     Json
+  /// Resultado del motor vigente (incluye parámetros legales usados)
+  resultado Json
+  estadoCalculo String // DEFINITIVO | PROVISIONAL | INCOMPLETO
+
+  totalBruto     Decimal @db.Decimal(14, 2)
+  totalRetenciones Decimal @db.Decimal(14, 2)
+  totalNeto      Decimal @db.Decimal(14, 2)
+
+  /// Validación fiscal/jurídica manual registrada al autorizar un cálculo provisional
+  validacionManual Json?
+
+  creadoPorId      String
+  modificadoPorId  String?
+  revisadoPorId    String?
+  autorizadoPorId  String?
+  creadoEn         DateTime @default(now())
+  actualizadoEn    DateTime @updatedAt
+  revisadoEn       DateTime?
+  autorizadoEn     DateTime?
+  pagadoEn         DateTime?
+
+  revisiones Revision[]
+  pagos      Pago[]
+  documentos Documento[]
+  carta      CartaRenuncia?
+
+  @@index([estado])
+  @@index([trabajadorNombre])
+  @@index([fechaTerminacion])
+  @@index([sucursalId])
+}
+
+/// Historial inmutable: cada versión de los datos/resultado, con motivo y autor. La primera es el cálculo original.
+model Revision {
+  id          String       @id @default(cuid())
+  finiquitoId String
+  finiquito   Finiquito    @relation(fields: [finiquitoId], references: [id], onDelete: Cascade)
+  version     Int
+  tipo        TipoRevision
+  motivo      String?
+  estadoAnterior EstadoFiniquito?
+  estadoNuevo    EstadoFiniquito?
+  datos       Json?
+  resultado   Json?
+  userId      String
+  userNombre  String
+  creadoEn    DateTime     @default(now())
+
+  @@index([finiquitoId, creadoEn])
+}
+
+model Pago {
+  id          String    @id @default(cuid())
+  finiquitoId String
+  finiquito   Finiquito @relation(fields: [finiquitoId], references: [id], onDelete: Cascade)
+  monto       Decimal   @db.Decimal(14, 2)
+  fechaPago   DateTime  @db.Date
+  forma       String // EFECTIVO | TRANSFERENCIA | CHEQUE | OTRO
+  referencia  String?
+  notas       String?
+  registradoPorId String
+  registradoPorNombre String
+  creadoEn    DateTime  @default(now())
+  anuladoEn   DateTime?
+  anuladoPor  String?
+  motivoAnulacion String?
+
+  @@index([finiquitoId])
+}
+
+model Documento {
+  id          String    @id @default(cuid())
+  finiquitoId String
+  finiquito   Finiquito @relation(fields: [finiquitoId], references: [id], onDelete: Cascade)
+  tipo        String // RECIBO | DESGLOSE | CARTA_RENUNCIA
+  formato     String // PDF | PNG
+  versionFiniquito Int
+  ruta        String
+  sha256      String
+  bytes       Int
+  generadoPorId String
+  creadoEn    DateTime  @default(now())
+
+  @@index([finiquitoId])
+}
+
+/// Carta de renuncia revisable: el texto es editable antes de imprimirse. Nunca se marca como firmada.
+model CartaRenuncia {
+  id          String    @id @default(cuid())
+  finiquitoId String    @unique
+  finiquito   Finiquito @relation(fields: [finiquitoId], references: [id], onDelete: Cascade)
+  contenido   Json
+  actualizadoPorId String
+  actualizadoEn DateTime @updatedAt
+  creadoEn    DateTime  @default(now())
+}
+
+model Bitacora {
+  id        String   @id @default(cuid())
+  entidad   String
+  entidadId String?
+  accion    String
+  detalle   Json?
+  userId    String?
+  userNombre String?
+  ip        String?
+  creadoEn  DateTime @default(now())
+
+  @@index([entidad, entidadId])
+  @@index([creadoEn])
+}
+
+model Folio {
+  anio    Int @id
+  ultimo  Int @default(0)
+}
